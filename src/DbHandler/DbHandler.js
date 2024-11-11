@@ -978,7 +978,7 @@ const deleteFeedback = async (id) => {
 
 const initializeDatabase = async () => {
     try {
-        await createDatabaseIfNotExists()
+        //await createDatabaseIfNotExists()
         await executeQuery(userQueries.useDatabaseQuery);
         await createTableIfNotExists();
     } catch (error) {
