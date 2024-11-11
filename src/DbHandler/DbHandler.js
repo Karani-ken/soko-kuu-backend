@@ -28,7 +28,7 @@ const executeQuery = (query, values = []) => {
     })
 }
 
-const createDatabaseIfNotExists = async () => {
+/*const createDatabaseIfNotExists = async () => {
     try {
         const result = await executeQuery(userQueries.showDatabases);
         const DatabaseExists = result.length > 0;
@@ -41,7 +41,7 @@ const createDatabaseIfNotExists = async () => {
     } catch (error) {
         console.error(error)
     }
-}
+}*/
 
 const createTableIfNotExists = async () => {
     const tables = [

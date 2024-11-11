@@ -8,7 +8,7 @@ router.post('/create',upload.array("product_images", 3),productController.create
 router.get('/products/:user_id', productController.getAllProducts)
 router.get('/product/:product_id',productController.getAProduct);
 router.put('/update/:product_id',protect(), productController.updateAProduct); //update details
-router.put('/update-images/:product_id',protect(), upload.array("product_images", 3), productController.updateProductImages); //update images
+router.put('/update-images/:product_id',protect(), upload.array("product_images", 5), productController.updateProductImages); //update images
 router.delete('/delete/:product_id', protect(), productController.deleteProduct);
 router.get('/all', productController.getProducts)
 router.get('/exclusive-products', productController.getExclusiveProducts);

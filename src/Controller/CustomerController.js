@@ -173,7 +173,7 @@ const loginCustomer = async (req, res) => {
         const token = jwt.sign(
             { id: customer.customer_id, username: customer.customer_name, email:customer.email },
             process.env.JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '30d' }
           );
         res.status(200).json(token);
     } catch (err) {
