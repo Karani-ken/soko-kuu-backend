@@ -28,7 +28,7 @@ const executeQuery = (query, values = []) => {
     })
 }
 
-/*const createDatabaseIfNotExists = async () => {
+const createDatabaseIfNotExists = async () => {
     try {
         const result = await executeQuery(userQueries.showDatabases);
         const DatabaseExists = result.length > 0;
@@ -41,7 +41,7 @@ const executeQuery = (query, values = []) => {
     } catch (error) {
         console.error(error)
     }
-}*/
+}
 
 const createTableIfNotExists = async () => {
     const tables = [
@@ -978,7 +978,7 @@ const deleteFeedback = async (id) => {
 
 const initializeDatabase = async () => {
     try {
-        //await createDatabaseIfNotExists()
+        await createDatabaseIfNotExists()
         await executeQuery(userQueries.useDatabaseQuery);
         await createTableIfNotExists();
     } catch (error) {
