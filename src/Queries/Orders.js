@@ -20,7 +20,7 @@ const showOrderItemsTable = `SHOW TABLES LIKE "order_items"`;
 const createOrderItemsTable = `CREATE TABLE order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
-    product_id INT NOT NULL,
+    product_id BINARY(16),
     product_name VARCHAR(255) NOT NULL,
     product_price DECIMAL(10, 2) NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
@@ -34,7 +34,7 @@ VALUES (UNHEX(REPLACE(?, '-', '')), ?, ?, ?, ?);`;
 
 // Insert Order Items
 const addOrderItems = `INSERT INTO order_items (order_id, product_id, product_name, product_price, quantity) 
-VALUES (?, ?, ?, ?, ?);`;
+VALUES (?, UNHEX(REPLACE(?, '-', '')), ?, ?, ?);`;
 
 // Get Orders by Customer ID
 const getOrdersByCustomerId = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders WHERE customer_id = UNHEX(?);`
