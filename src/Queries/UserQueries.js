@@ -10,7 +10,7 @@ const showDatabases = `SHOW DATABASES LIKE "${dbConfig.database}"`;
 const showUsersTable = 'SHOW TABLES LIKE "users"';
 
 // Use specific database
-const useDatabaseQuery = `USE ${dbConfig.database}`;
+const useDatabaseQuery = `USE \`${dbConfig.database}\``;
 
 // Create the users table with all fields
 const usersTable = `CREATE TABLE IF NOT EXISTS users (
