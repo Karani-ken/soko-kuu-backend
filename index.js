@@ -13,7 +13,7 @@ const orderRoutes = require('./src/Routes/order.Routes');
 const locationRoutes = require('./src/Routes/location.Routes');
 const feedbackRoutes = require('./src/Routes/feedback.Routes');
 const houseRoutes = require('./src/Routes/house.Routes');
-
+const port = process.env.PORT
 const app = express();
 
 
@@ -52,6 +52,6 @@ app.use('/feedback', feedbackRoutes);
 app.use('/houses', houseRoutes);
 
 // Start the server
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(port , () => {
+    console.log(`Server is running on port ${port}`);
 });
