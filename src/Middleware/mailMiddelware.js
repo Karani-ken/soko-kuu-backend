@@ -59,7 +59,7 @@ const sendOtpEmail = async (email, otpCode) => {
 
 
         await transporter.sendMail(mailOptions);
-        console.log({ message: "OTP Email sent successfully" })
+       // console.log({ message: "OTP Email sent successfully" })
     } catch (error) {
         console.log(error)
         // throw error;
@@ -110,7 +110,7 @@ const sendPasswordResetMessage = async (email) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log({ message: "Password reset success email sent successfully" });
+        //console.log({ message: "Password reset success email sent successfully" });
 
     } catch (error) {
         console.log(error);
@@ -162,7 +162,7 @@ const sendWelcomeEmail = async (email) => {
         };
 
         await transporter.sendMail(mailOptions);
-        console.log({ message: "Registration success email sent successfully" });
+        //console.log({ message: "Registration success email sent successfully" });
 
     } catch (error) {
         console.log(error);
@@ -264,7 +264,7 @@ const sendOrderConfirmationEmail = async (email, name, orderData, total_price, l
         };
 
         await transporter.sendMail(mailOptions);
-        console.log({ message: "Order confirmation email sent successfully" });
+        //console.log({ message: "Order confirmation email sent successfully" });
     } catch (error) {
         console.log(error);
         // Handle error, e.g., by logging or rethrowing

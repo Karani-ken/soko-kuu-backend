@@ -74,11 +74,11 @@ const deleteCategory = async (req, res) => {
 
         // Fetch all categories
         const categories = await dbHandler.getCategories();
-        console.log(typeof(id));
+       
 
         // Find the category to delete by its ID
         const category = categories.find(cat => cat.category_id === Number(id));
-        console.log(category);
+        
 
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
@@ -89,9 +89,9 @@ const deleteCategory = async (req, res) => {
             const key = category.banner.split('/').pop();
             try {
                 const response = await removeFromSpaces(key);
-                console.log(`Old banner ${key} deleted from Cloud Storage`, response);
+               
             } catch (error) {
-                console.error(`Error deleting old banner ${key}:`, error);
+               
                 return res.status(500).json({ message: 'Error deleting banner', error });
             }
         }
@@ -124,7 +124,7 @@ const deleteProductCategory = async (req, res) => {
             const key = category.banner.split('/').pop();
             try {
                 const response = await removeFromSpaces(key);
-                console.log(`Old banner ${key} deleted from Cloud Storage`, response);
+             
             } catch (error) {
                 console.error(`Error deleting old banner ${key}:`, error);
                 return res.status(500).json({ message: 'Error deleting banner', error });
@@ -181,9 +181,9 @@ const deleteServiceCategory = async (req, res) => {
             const key = category.banner.split('/').pop();
             try {
                 const response = await removeFromSpaces(key);
-                console.log(`Old banner ${key} deleted from Cloud Storage`, response);
+              
             } catch (error) {
-                console.error(`Error deleting old banner ${key}:`, error);
+            
                 return res.status(500).json({ message: 'Error deleting banner', error });
             }
         }

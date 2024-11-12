@@ -53,7 +53,7 @@ const newHouse = async (req, res) => {
         };
 
         const response = await houseHandle.addHouse(houseData);
-        console.log(response)
+       
         return res.status(201).json(response)
 
     } catch (error) {
@@ -105,7 +105,7 @@ const getASingle = async (req, res) => {
         const response = await houseHandle.getHouseById(id);
         //console.log(response)
         if (response.houses.length > 0 && response.success) {
-            console.log(response.houses)
+           
             return res.status(200).json(response.houses)
         }
         return res.status(200).json([])
@@ -221,7 +221,7 @@ const updateHouse = async (req, res) => {
 
 //delete house
 const deleteHouse = async (req, res) => {
-    console.log('..deleting')
+   
 
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {

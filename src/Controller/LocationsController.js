@@ -52,7 +52,7 @@ const deleteLocationController = async (req, res) => {
 const getAllLocationsController = async (req, res) => {
     try {
         const locations = await getAllLocations();
-        console.log(locations)
+       
         res.status(200).json(locations);
     } catch (error) {
         console.error('Error fetching locations:', error);
