@@ -84,9 +84,9 @@ const getUserServices = async (req, res) => {
         if (!user_id) {
             return res.status(400).json({ message: "User ID is required" });
         }
-        console.log(user_id)
+       // console.log(user_id)
         const services = await dbHandler.getUserServices(user_id);
-        console.log(services)
+       // console.log(services)
         const newServices = await Promise.all(
             services.map(async (service) => {
                 const user = await dbHandler.getOneUser(user_id);
@@ -105,9 +105,9 @@ const getUserServices = async (req, res) => {
 // Get all services
 const getAllServices = async (req, res) => {
     try {
-        console.log("getting services...")
+       // console.log("getting services...")
         const services = await dbHandler.getAllServices();
-        console.log(services)
+       // console.log(services)
         const newServices = await Promise.all(
             services.map(async (service) => {
                 const user = await dbHandler.getOneUser(service.user_id);
@@ -163,7 +163,7 @@ const updateServiceImages = async (req, res) => {
                 const key = imageUrl.split('/').pop();
                 try {
                     const response = await removeFromSpaces(key)
-                    console.log(`old profile picture ${key} deleted from Cloudinary`, response);
+                    //console.log(`old profile picture ${key} deleted from Cloudinary`, response);
                 } catch (error) {
                     console.error(`Error deleting old profile picture ${key}:`, err);
                     return res.status(500).json({ message: 'Error deleting old profile pictures', error });
@@ -210,7 +210,7 @@ const deleteService = async (req, res) => {
                 const key = imageUrl.split('/').pop();
                 try {
                     const response = await removeFromSpaces(key)
-                    console.log(`old profile picture ${key} deleted from Cloudinary`, response);
+                  //  console.log(`old profile picture ${key} deleted from Cloudinary`, response);
                 } catch (error) {
                     console.error(`Error deleting old profile picture ${key}:`, err);
                     return res.status(500).json({ message: 'Error deleting old profile pictures', error });

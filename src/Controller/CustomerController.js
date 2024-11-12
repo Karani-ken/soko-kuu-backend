@@ -157,7 +157,7 @@ const loginCustomer = async (req, res) => {
     try {
         // Get customer by email
         const customer = await dbHandler.getCustomerByEmail(email);
-        console .log(customer)
+     
         if (!customer || customer.length === 0) {
             return res.status(404).json({ error: 'Customer not found.' });
         }

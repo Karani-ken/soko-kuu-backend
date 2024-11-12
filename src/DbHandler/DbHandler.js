@@ -84,7 +84,7 @@ const insertUser = async (userData) => {
 
     try {
         await executeQuery(userQueries.createUser, [name, email, password, phone, location, category, profile_pic, type, description, address, city, county, agent_id]);
-        console.log('User added successfully');
+       // console.log('User added successfully');
         return "success"
     } catch (error) {
         console.log('Error inserting user:', error);
@@ -98,7 +98,7 @@ const addAgent = async (userData) => {
     const { name, email, password, phone, county, city, role } = userData
     try {
         await executeQuery(userQueries.insertAgent, [name, email, password, phone, county, city, role])
-        console.log('Agent added successfully');
+       // console.log('Agent added successfully');
         return "success"
     } catch (error) {
         console.log('Error inserting Agent:', error);
@@ -113,7 +113,7 @@ const addAgent = async (userData) => {
 const updateUserPassword = async (password, email) => {
     try {
         await executeQuery(userQueries.updateUserPassword, [password, email]);
-        console.log("Password was updated successfully");
+       // console.log("Password was updated successfully");
     } catch (error) {
         console.log(error)
     }
@@ -133,7 +133,7 @@ const updateUser = async (userData) => {
         const { id, name, phone, location, category, description, type, address, city, county } = userData;
         // Ensure all fields are passed, and email is used as a unique identifier for the update.
         await executeQuery(userQueries.updateUser, [name, phone, location, category, description, type, address, city, county, id]);
-        console.log('User updated successfully');
+        //console.log('User updated successfully');
         return "success"
     } catch (error) {
         console.log('Error updating user:', error);
@@ -145,7 +145,7 @@ const updateUserProfile = async (updatedProfile) => {
     const { id, profile_pic, public_id } = updatedProfile
     try {
         await executeQuery(userQueries.updateUserProfilePic, [profile_pic, public_id, id]);
-        console.log("Profile pic updated successfully")
+       // console.log("Profile pic updated successfully")
         return "success"
     } catch (error) {
         throw error;
@@ -193,7 +193,7 @@ const deleteUser = async (id) => {
 const updateUserPlan = async (id, subscription) => {
     try {
         await executeQuery(userQueries.updatePlan, [subscription, id])
-        console.log("Updated status")
+       // console.log("Updated status")
     } catch (error) {
         throw error;
     }
@@ -216,7 +216,7 @@ const insertProduct = async (productData) => {
     const { product_name, user_id, product_price, quantity, product_description, product_images, category, color, size } = productData;
     try {
         await executeQuery(productQueries.insertProduct, [product_name, product_description, product_price, quantity, product_images, category,color, size, user_id]);
-        console.log("Product was added")
+        //console.log("Product was added")
     } catch (error) {
         throw error;
     }
@@ -224,7 +224,7 @@ const insertProduct = async (productData) => {
 const updateProductQuantity = async (quantity, product_id) => {
     try {
         await executeQuery(productQueries.updateQuantity, [quantity, product_id])
-        console.log("Quantity was updated")
+       // console.log("Quantity was updated")
     } catch (error) {
         throw error;
     }
@@ -293,7 +293,7 @@ const updateProduct = async (updateProductData) => {
     const { product_name, product_price, quantity, product_description, product_id, category, color, size } = updateProductData;
     try {
         await executeQuery(productQueries.updateProducts, [product_name, product_price, quantity, product_description, category, color, size, product_id]);
-        console.log("product was updated")
+       // console.log("product was updated")
         return "Product was updated";
     } catch (error) {
         console.log(error)
@@ -305,7 +305,7 @@ const updateProductImages = async (updatedProductImageData) => {
     const { product_images, product_id } = updatedProductImageData;
     try {
         const response = await executeQuery(productQueries.updateProductImages, [product_images, product_id]);
-        console.log("product Images were updated", response)
+        //console.log("product Images were updated", response)
         return "Product images were updated";
     } catch (error) {
         console.log(error)
@@ -367,7 +367,7 @@ const getCategories = async () => {
 const deleteCategory = async (category_id) => {
     try {
         await executeQuery(categoriesQueries.deleteCategory, [category_id]);
-        console.log("deleted product successfully")
+        //console.log("deleted product successfully")
     } catch (error) {
         throw error;
     }
@@ -396,7 +396,7 @@ const getProductCategories = async () => {
 const deleteProductCategory = async (category_id) => {
     try {
         await executeQuery(categoriesQueries.deleteProductCategory, [category_id]);
-        console.log("deleted product successfully")
+        //console.log("deleted product successfully")
     } catch (error) {
         throw error;
     }
@@ -424,7 +424,7 @@ const getServiceCategories = async () => {
 const deleteServiceCategory = async (category_id) => {
     try {
         await executeQuery(categoriesQueries.deleteServiceCategory, [category_id]);
-        console.log("deleted product successfully")
+       // console.log("deleted product successfully")
     } catch (error) {
         throw error;
     }
@@ -434,7 +434,7 @@ const insertPayment = async (paymentData) => {
     const { transaction_code, name, email, phone, agent_id } = paymentData;
     try {
         await executeQuery(paymentQueries.insertPayment, [transaction_code, name, email, phone, agent_id]);
-        console.log("Payment was added");
+        //console.log("Payment was added");
         return "Payment was added";
     } catch (error) {
         console.log(error);
@@ -491,7 +491,7 @@ const updatePayment = async (updatePaymentData) => {
     const { name, email, phone, agent_id, payment_id } = updatePaymentData;
     try {
         await executeQuery(paymentQueries.updatePayment, [name, email, phone, agent_id, payment_id]);
-        console.log("Payment was updated");
+       // console.log("Payment was updated");
         return "Payment was updated";
     } catch (error) {
         console.log(error);
@@ -503,7 +503,7 @@ const updatePayment = async (updatePaymentData) => {
 const deletePayment = async (payment_id) => {
     try {
         await executeQuery(paymentQueries.deletePayment, [payment_id]);
-        console.log("Payment was deleted");
+       // console.log("Payment was deleted");
         return "Payment was deleted";
     } catch (error) {
         console.log(error);
@@ -517,7 +517,7 @@ const insertService = async (serviceData) => {
     const { service_name, service_description, service_charges, user_id, offer, service_images, service_category } = serviceData;
     try {
         await executeQuery(serviceQueries.insertIntoTable, [service_name, service_description, service_charges, user_id, offer, service_images, service_category]);
-        console.log("Service was added");
+       // console.log("Service was added");
         return "Service was added";
     } catch (error) {
         console.log("error adding service", error);
@@ -529,7 +529,7 @@ const insertService = async (serviceData) => {
 const getAllServices = async () => {
     try {
         const services = await executeQuery(serviceQueries.selectAllServices);
-        console.log(services)
+        //console.log(services)
         return services;
     } catch (error) {
         console.log(error);
@@ -553,7 +553,7 @@ const getOneService = async (service_id) => {
 const getUserServices = async (user_id) => {
     try {
         const services = await executeQuery(serviceQueries.getServicesOfferedByUsers, [user_id]);
-        console.log(services)
+       // console.log(services)
         return services;
     } catch (error) {
         console.log(error);
@@ -584,7 +584,7 @@ const updateService = async (updateServiceData) => {
     const { service_name, service_description, service_charges, offer, service_category, service_id } = updateServiceData;
     try {
         await executeQuery(serviceQueries.updateService, [service_name, service_description, service_charges, offer, service_category, service_id]);
-        console.log("Service was updated");
+        //console.log("Service was updated");
         return "Service was updated";
     } catch (error) {
         console.log(error);
@@ -597,7 +597,7 @@ const updateServiceImages = async (updateServiceImagesData) => {
     const { service_images, service_id } = updateServiceImagesData;
     try {
         await executeQuery(serviceQueries.updateProductImages, [service_images, service_id]);
-        console.log("Service images were updated");
+        //console.log("Service images were updated");
         return "Service images were updated";
     } catch (error) {
         console.log(error);
@@ -609,7 +609,7 @@ const updateServiceImages = async (updateServiceImagesData) => {
 const deleteService = async (service_id) => {
     try {
         await executeQuery(serviceQueries.deleteService, [service_id]);
-        console.log("Service was deleted");
+       // console.log("Service was deleted");
         return "Service was deleted";
     } catch (error) {
         console.log(error);
@@ -683,7 +683,7 @@ const getCartItems = async (cart_id) => {
 const updateCartItem = async (cart_item_id, quantity) => {
     try {
        const result = await executeQuery(cartQueries.updateCartItems, [quantity, cart_item_id]);
-        console.log(result)
+       // console.log(result)
     } catch (error) {
         console.log(error)
         throw error;
@@ -748,7 +748,7 @@ const getCustomerByEmail = async (email) => {
 const updateCustomerPassword = async (password, email) => {
     try {
         await executeQuery(customerQuery.updatePassword, [password, email]);
-        console.log("password updated successfully")
+        //console.log("password updated successfully")
     } catch (err) {
         console.error('Error retrieving customer by email:', err);
         throw err;
@@ -855,7 +855,7 @@ const deleteOrderItemsByOrderId = async (order_id) => {
 const insertOtp = async (email,code,expiresAt) => {
     try {
         await executeQuery(otpQuery.insertCode, [email,code,expiresAt])
-        console.log("code inserted successfully")
+        //console.log("code inserted successfully")
     } catch (err) {
         console.error('Error deleting customer:', err);
         throw err;
@@ -875,7 +875,7 @@ const getOtp = async (email) => {
 const removeOtp = async (email) => {
     try {
         await executeQuery(otpQuery.deleteOtp, [email])
-        console.log('OTP deleted Successfully')
+        //console.log('OTP deleted Successfully')
     } catch (err) {
         console.error('Error deleting customer:', err);
         throw err;
@@ -885,7 +885,7 @@ const removeOtp = async (email) => {
 const addLocation = async (location_name,charges) => {
     try {
         await executeQuery(locations.insertLocation,[location_name,charges])
-        console.log('added Successfully')
+       // console.log('added Successfully')
     } catch (err) {
         console.error('Error deleting customer:', err);
         throw err;
@@ -905,7 +905,7 @@ const updateLocation = async (location_id, location_name, charges) => {
     
     try {
         await executeQuery(locations.updateLocation, [location_name, charges, location_id]);
-        console.log('Location updated successfully');
+        //console.log('Location updated successfully');
     } catch (error) {
         console.error('Error updating location:', error);
         throw error;
@@ -916,7 +916,7 @@ const deleteLocation = async (location_id) => {
     
     try {
         await executeQuery(locations.deleteLocation, [location_id]);
-        console.log('Location deleted successfully');
+       // console.log('Location deleted successfully');
     } catch (error) {
         console.error('Error deleting location:', error);
         throw error;
@@ -959,7 +959,7 @@ const getFeedbackByProduct = async (product_id) => {
 const updateFeedback = async (id, rating, comment) => {
     try {
         await executeQuery(feedback.updateFeedback, [rating, comment, id])
-        console.log("success")
+        //console.log("success")
     } catch (error) {
         console.error('Error fetching locations:', error);
         throw error;
@@ -969,7 +969,7 @@ const updateFeedback = async (id, rating, comment) => {
 const deleteFeedback = async (id) => {
     try {
         await executeQuery(feedback.deleteFeedback, [id]);
-        console.log("deleted successfully")
+        //console.log("deleted successfully")
     } catch (error) {
         console.error('Error fetching locations:', error);
         throw error;

@@ -17,20 +17,20 @@ const protect = (adminRequired = false) => {
 
                 // Check if admin access is required and verify role
                 if (adminRequired && decoded?.role !== 'admin') {
-                    console.error('Not authorized - Admin access required');
+                   // console.error('Not authorized - Admin access required');
                     return res.status(403).json("Admin Access required");
                 }
 
                 // Proceed to the next middleware/route handler
                 return next();
             } catch (error) {
-                console.error('Token verification failed:', error);
+                //console.error('Token verification failed:', error);
                 return res.status(401).json("Unauthorized - Invalid token");
             }
         }
 
         if (!token) {
-            console.error('Not authorized - No token provided');
+            //console.error('Not authorized - No token provided');
             return res.status(403).json("Not authorized - No token provided");
         }
     };

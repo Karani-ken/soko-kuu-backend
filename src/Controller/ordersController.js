@@ -39,7 +39,7 @@ const generateToken = async () => {
                 authorization: `Basic ${auth}`
             }
         });
-        console.log(response.data.access_token);
+       // console.log(response.data.access_token);
         return response.data.access_token; // Return the token directly
     } catch (err) {
         console.log(err);
@@ -52,7 +52,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
     const phone = phoneNumber.substring(1);
     const amount = totalAmount;
     const token = await generateToken(); // Await the token generation
-    console.log("Token:", token);
+    //console.log("Token:", token);
 
     try {
 
@@ -77,7 +77,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
                 },
             }
         ).then((response) => {
-            console.log(response.data);
+           // console.log(response.data);
             return response.data
         }).catch((err) => {
             console.error('STK Push Error:', err.response ? err.response.data : err.message);
@@ -104,7 +104,7 @@ const createOrder = async (req, res) => {
         // Step 1: Create the order
         const total_price = totalAmount;
         const orderResult = await orderHandler.addOrder(customer_id, payment_code, location, location_pin, total_price);
-        console.log(orderResult)
+       // console.log(orderResult)
         const order_id = orderResult.insertId; // Get the generated order ID
 
         // Step 2: Add items to order_items table
@@ -136,7 +136,7 @@ const createOrder = async (req, res) => {
         await sendOrderConfirmationEmail(customer.email, customer.customer_name, orderData, total_price, location, location_pin)
         for (let item of items) {
             const product = await orderHandler.getOneProduct(item.product_id)
-            console.log(product[0])
+            //console.log(product[0])
             if (product[0].quantity >= item.quantity && product[0].quantity.length > 0) {
                 product[0].quantity -= item.quantity
                 await orderHandler.updateProductQuantity(product[0].quantity, product[0].product_id)
@@ -155,7 +155,7 @@ const createOrder = async (req, res) => {
         (async () => {
             try {
                 const response = await sendSms(message, formattedRecipients);
-                console.log('SMS sent successfully:', response);
+                //console.log('SMS sent successfully:', response);
             } catch (err) {
                 console.error('Failed to send SMS:', err.message);
             }
@@ -309,7 +309,7 @@ const getOrders = async (req, res) => {
         const detailedOrders = await Promise.all(orders.map(async (order) => {
             // Fetch customer details
             const customer = await orderHandler.getCustomerById(order.customer_id);
-            console.log(customer)
+           // console.log(customer)
             // Fetch order items
             const orderItems = await orderHandler.getOrderItemsByOrderId(order.order_id);
 

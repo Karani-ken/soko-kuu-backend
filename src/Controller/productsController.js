@@ -161,7 +161,7 @@ const updateAProduct = async (req, res) => {
         // Prepare the update data object
         const updateProductData = { product_id, product_name, product_price, quantity, product_description, category, color, size };
 
-        console.log(updateProductData)
+       // console.log(updateProductData)
         // Update the product in the database
         await dbHandler.updateProduct(updateProductData);
 
@@ -192,7 +192,7 @@ const updateProductImages = async (req, res) => {
                 const key = imageUrl.split('/').pop();
                 try {
                     const response = await removeFromSpaces(key)
-                    console.log(`old profile picture ${key} deleted from Cloudinary`, response);
+                  //  console.log(`old profile picture ${key} deleted from Cloudinary`, response);
                 } catch (error) {
                     console.error(`Error deleting old profile picture ${key}:`, err);
                     return res.status(500).json({ message: 'Error deleting old profile pictures', error });
@@ -240,7 +240,7 @@ const deleteProduct = async (req, res) => {
                 const key = imageUrl.split('/').pop();
                 try {
                     const response = await removeFromSpaces(key)
-                    console.log(`old profile picture ${key} deleted from Cloudinary`, response);
+                   // console.log(`old profile picture ${key} deleted from Cloudinary`, response);
                 } catch (error) {
                     console.error(`Error deleting old profile picture ${key}:`, err);
                     return res.status(500).json({ message: 'Error deleting old profile pictures', error });
