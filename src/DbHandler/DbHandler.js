@@ -67,7 +67,7 @@ const createTableIfNotExists = async () => {
             const tableInfo = await executeQuery(table.query);
             if (tableInfo.length === 0) {
                 await executeQuery(table.createQuery);
-                console.log(`${table.name} table was created successfully`);
+                //console.log(`${table.name} table was created successfully`);
             } else {
                 console.log(`${table.name} table already exists`);
             }

@@ -13,9 +13,18 @@ const orderRoutes = require('./src/Routes/order.Routes');
 const locationRoutes = require('./src/Routes/location.Routes');
 const feedbackRoutes = require('./src/Routes/feedback.Routes');
 const houseRoutes = require('./src/Routes/house.Routes');
-const port = process.env.PORT
+const rateLimit = require('express-rate-limit');  // Import express-rate-limit
+const port = process.env.PORT;
 const app = express();
 
+// Set up rate limiter middleware for API routes
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 500,  // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true,  // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
+});
 
 
 app.use(express.json());
@@ -36,22 +45,25 @@ dbHandler.pool.getConnection((err, connection) => {
         });
 });
 
-
-
 // Define your API routes
-app.use('/auth', authRoutes);
-app.use('/products', productRoutes);
-app.use('/categories', categoryRoutes);
-app.use('/services', serviceRoutes);
+app.use('/auth', apiLimiter, authRoutes);
+app.use('/products', apiLimiter, productRoutes);
+app.use('/categories', apiLimiter, categoryRoutes);
+app.use('/services', apiLimiter, serviceRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/cart', cartRoutes);
-app.use('/orders', orderRoutes);
-app.use('/customer', customerRoutes);
+app.use('/orders', apiLimiter, orderRoutes);
+app.use('/customer', apiLimiter, customerRoutes);
 app.use('/locations', locationRoutes);
 app.use('/feedback', feedbackRoutes);
-app.use('/houses', houseRoutes);
+app.use('/houses', apiLimiter, houseRoutes);
 
 // Start the server
-app.listen(port , () => {
+module.exports = app;
+
+// Start the server if not in testing environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-});
+  });
+}

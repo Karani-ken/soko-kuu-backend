@@ -12,8 +12,8 @@ afterAll(() => {
 
 describe('Rate Limiting', () => {
     it('should block requests after the rate limit is exceeded', async () => {
-        const MAX_REQUESTS = 50; // Max requests as defined in rate limiter
-        const ROUTE = '/auth'; // Adjust to the route you want to test
+        const MAX_REQUESTS = 500; // Max requests as defined in rate limiter
+        const ROUTE = '/products'; // Adjust to the route you want to test
 
         for (let i = 1; i <= MAX_REQUESTS; i++) {
             const response = await request(app).get(ROUTE);
