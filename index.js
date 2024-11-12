@@ -17,6 +17,7 @@ const rateLimit = require('express-rate-limit');  // Import express-rate-limit
 const port = process.env.PORT;
 const app = express();
 
+app.set('trust proxy', 1);
 // Set up rate limiter middleware for API routes
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
