@@ -24,10 +24,10 @@ const createCart = async (req, res) => {
 // Get the cart of a specific customer
 const getCustomerCart = async (req, res) => {
     const { customer_id } = req.params;
-    console.log(typeof(customer_id))
+  
     try {
         const cart = await cartHandler.getCustomerCart(customer_id);
-        console.log(cart[0])
+       
         if (cart.length === 0) {
             return res.status(404).json({ error: "Cart not found" });
         }
@@ -52,7 +52,7 @@ const deleteCart = async (req, res) => {
 // Add item to the cart
 // Add item to the cart
 const addCartItem = async (req, res) => {
-    console.log(req.body);
+  
     const { product_id, product_name, product_price, quantity } = req.body;
     const { cart_id } = req.params;
 
@@ -67,7 +67,7 @@ const addCartItem = async (req, res) => {
     try {
         // Get the cart items by cart_id
         const cartItems = await cartHandler.getCartItems(cart_id);
-        console.log(cartItems)
+      
         // Check if the cart has any items
         const existingItem = cartItems.find(item => item.product_id === product_id);
         //console.log(existingItem.product_name)
@@ -75,12 +75,12 @@ const addCartItem = async (req, res) => {
             // Update the existing item's quantity
             const newQuantity = existingItem.quantity + 1; // Update the quantity
             await cartHandler.updateCartItem(existingItem.cart_item_id, newQuantity); // Assuming you have this function in your handler
-            console.log("Item quantity updated in cart");
+           
             return res.status(200).json({ message: "Item quantity updated in cart" });
         } else {
             // Add the item to the cart   
             await cartHandler.addCartItem(product_id, cart_id, product_name, product_price, quantity);
-            console.log("Item added to cart");   
+             
             return res.status(201).json({ message: "Item added to cart" });
         }
     } catch (err) {
@@ -120,9 +120,9 @@ const getCartItems = async (req, res) => {
 // Update cart item
 const updateCartItem = async (req, res) => {
     const { quantity } = req.body;
-    console.log(quantity)
+  
     const { cart_item_id } = req.params
-    console.log(cart_item_id)
+  
     if (!cart_item_id || !quantity) {
         return res.status(400).json({ error: "Missing required fields" });
     }

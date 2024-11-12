@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sendSms = require('../Middleware/sendsms.middleware')
-const { sendWelcomeEmail, sendOtpEmail, sendPasswordResetMessage  } = require('../Middleware/mailMiddelware')
+const { sendWelcomeEmail, sendOtpEmail, sendPasswordResetMessage } = require('../Middleware/mailMiddelware')
 const userHandler = require('../DbHandler/DbHandler');
 const dotenv = require('dotenv');
 const { DeleteObjectCommand } = require('@aws-sdk/client-s3');
@@ -44,7 +44,7 @@ const register = async (req, res) => {
   // Check if the user account already exists
   const accountExists = await userHandler.findUserByEmail(email);
   if (accountExists.length !== 0) {
-    return res.status(400).json({ message: "Account already exists!" });  
+    return res.status(400).json({ message: "Account already exists!" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -68,7 +68,7 @@ const register = async (req, res) => {
     };
 
     // Insert user into the database
-    console.log(userData)
+    
     await userHandler.insertUser(userData);
 
     //send sms on successful registration
@@ -77,11 +77,11 @@ const register = async (req, res) => {
     const formattedPhone = phone.startsWith('0') ? phone.slice(1) : phone;
     const response = await sendSms(message, `+254${formattedPhone}`);
     sendWelcomeEmail(email)
-    console.log(response)
+   
     return res.status(201).json('User registered successfully');
   } catch (error) {
-    console.log(error)
-    return res.status(500).json('Error registering user',error);
+    
+    return res.status(500).json('Error registering user', error);
   }
 };
 
@@ -163,7 +163,7 @@ const requestPasswordReset = async (req, res) => {
     await sendOtpEmail(email, otpCode);
 
     return res.status(200).json({ message: "Otp sent to your email address" });
-   
+
   } catch (error) {
     console.log(error)
     return res.status(500).json({ message: "Error sending OTP", error })
@@ -176,7 +176,7 @@ const resetPassword = async (req, res) => {
     if (!otp || !newPassword || !email) {
       return res.status(401).json("Otp and new Password are required")
     }
-   
+
     const user = await dbHandler.findUserByEmail(email)
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -218,7 +218,7 @@ const updateUser = async (req, res) => {
   try {
     const userData = { id, name, phone, location, category, description, type, address, city, county };
     // Update user in the database
-    console.log(userData)
+    
     await userHandler.updateUser(userData);
     return res.status(200).json('User updated successfully');
   } catch (error) {
@@ -243,14 +243,14 @@ const updateProfilePic = async (req, res) => {
     if (user[0].profile_pic) {
       try {
         const fileName = user[0].profile_pic.split('/').pop();
-        console.log(fileName)
+       
         const deleteParams = {
           Bucket: process.env.DO_SPACES_BUCKET,
           Key: fileName,
         }
         const command = new DeleteObjectCommand(deleteParams);
         await s3Client.send(command);
-        console.log('Old profile picture deleted from Digital Ocean');
+      
       } catch (err) {
         console.error('Error deleting old profile picture:', err);
         return res.status(500).json({ message: 'Error deleting old profile picture', err });
@@ -295,14 +295,14 @@ const deleteUser = async (req, res) => {
     // Only attempt to delete the profile picture if it exists
     if (fileUrl) {
       const fileName = fileUrl.split('/').pop();
-      console.log(fileName);
+     
       const deleteParams = {
         Bucket: process.env.DO_SPACES_BUCKET,
         Key: fileName,
       };
       const command = new DeleteObjectCommand(deleteParams);
       await s3Client.send(command);
-      console.log("Deleted user profile picture from Digital Ocean Spaces");
+     
     } else {
       console.log("No profile picture to delete");
     }
