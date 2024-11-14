@@ -10,8 +10,8 @@ const createOrdersTable = `CREATE TABLE orders (
     location_pin VARCHAR(255),  -- Ensure this is intentional
     total_price DECIMAL(10, 2),
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)  ON DELETE CASCADE;
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)  ON DELETE CASCADE
 )`;
 
 // Order Items Table
