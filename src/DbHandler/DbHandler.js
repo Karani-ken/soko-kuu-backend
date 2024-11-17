@@ -3,10 +3,8 @@ const dbConfig = require('../Config/dbConfig')
 const userQueries = require("../Queries/UserQueries")
 const productQueries = require('../Queries/productQueries')
 const categoriesQueries = require('../Queries/CategoriesQueries')
-const visitortracker = require('../Queries/visitorTracker')
 const paymentQueries = require('../Queries/PaymentQueries')
 const serviceQueries = require('../Queries/ServiceQueries')
-const cartQueries = require('../Queries/CartQueries')
 const customerQuery = require('../Queries/CustomersQueries')
 const orderQueries = require('../Queries/Orders')
 const otpQuery = require('../Queries/OtpQueries')
@@ -51,9 +49,7 @@ const createTableIfNotExists = async () => {
         { name: 'product_categories', query: categoriesQueries.showProductCategoriesTable, createQuery: categoriesQueries.productCategoryTable },
         { name: 'service_categories', query: categoriesQueries.showServiceCategoriesTable, createQuery: categoriesQueries.serviceCategoryTable },      
         { name: 'services', query: serviceQueries.showServiceTable, createQuery: serviceQueries.createServiceTable },
-        { name: 'payments', query: paymentQueries.showPaymentsTable, createQuery: paymentQueries.createPaymentsTable },
-        { name: 'cart', query: cartQueries.showCartTable, createQuery: cartQueries.createCart },
-        { name: 'cart_items', query: cartQueries.showCartItemsTable, createQuery: cartQueries.createCartItemsTable },
+        { name: 'payments', query: paymentQueries.showPaymentsTable, createQuery: paymentQueries.createPaymentsTable },        
         { name: 'orders', query: orderQueries.showOrdersTable, createQuery: orderQueries.createOrdersTable },
         { name: 'orders_items', query: orderQueries.showOrderItemsTable, createQuery: orderQueries.createOrderItemsTable },
         { name: 'customers', query: customerQuery.showCustomersTable, createQuery: customerQuery.createCustomerTable },
@@ -284,9 +280,6 @@ const getProductsOnOffer = async () => {
         throw error;
     }
 }
-
-
-
 
 //update products
 const updateProduct = async (updateProductData) => {
@@ -617,93 +610,7 @@ const deleteService = async (service_id) => {
     }
 };
 
-//Cart 
 
-// Cart DB handler functions
-const addCart = async (customer_id) => {
-    try {
-        return await executeQuery(cartQueries.insertCart, [customer_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-    
-};
-
-//get cart by id
-const getcartById = async (cart_id) => {
-    try {
-        return executeQuery(cartQueries.getCartById, [cart_id])
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-}
-const getCustomerCart = async (customer_id) => {
-    try {
-        return await executeQuery(cartQueries.getCustomerCart, [customer_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteCart = async (cart_id) => {
-    try {
-        return await executeQuery(cartQueries.deleteCart, [cart_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-// Cart Items DB handler functions
-const addCartItem = async (product_id, cart_id, product_name, product_price, quantity) => {
-    try {
-        return await executeQuery(cartQueries.addCartItems, [product_id, cart_id, product_name, product_price, quantity]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-  
-};
-
-const getCartItems = async (cart_id) => {
-    try {
-        return await executeQuery(cartQueries.getCartItems, [cart_id]); 
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-  
-};
-
-const updateCartItem = async (cart_item_id, quantity) => {
-    try {
-       const result = await executeQuery(cartQueries.updateCartItems, [quantity, cart_item_id]);
-       // console.log(result)
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteCartItemById = async (cart_item_id) => {
-    try {
-        return await executeQuery(cartQueries.deleteCartItemById, [cart_item_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteAllCartItems = async (cart_id) => {
-    return await executeQuery(cartQueries.deleteAllCartItems, [cart_id]);
-};
 //Customers
 const insertCustomer = async (customerData) => {
     const { customer_name, phone, email,password, googleId, town, county,  } = customerData;
@@ -1036,16 +943,7 @@ module.exports = {
     setProductDiscount,
     getServicesByCategories,
     getServicesOnOffer,
-    getGoldUsers,
-    addCart,
-    getCustomerCart,
-    getcartById,
-    deleteCart,
-    addCartItem,
-    getCartItems,
-    updateCartItem,
-    deleteCartItemById,
-    deleteAllCartItems,
+    getGoldUsers,    
     insertCustomer,
     updateCustomer,
     getCustomerById,

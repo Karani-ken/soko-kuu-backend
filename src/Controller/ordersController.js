@@ -57,12 +57,12 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
     try {
 
         await axios.post(
-            'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+            'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
             {
-                BusinessShortCode: 174379,
+                BusinessShortCode: 174379,//STORE NUMBER FOR TILL
                 Password: generatePassword(),
                 Timestamp: getTimestamp(),
-                TransactionType: 'CustomerPayBillOnline',
+                TransactionType: 'CustomerBuyGoodsOnline',
                 Amount: amount,
                 PartyA: `254${phone}`,
                 PartyB: 174379,
@@ -87,7 +87,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
     }
 };
 
-const createOrder = async (req, res) => {
+/*const createOrder = async (req, res) => {
     const { customer_id, payment_code, items, totalAmount, location, location_pin } = req.body;
 
     if (!customer_id || !payment_code || !items || !items.length || !location) {
@@ -166,8 +166,8 @@ const createOrder = async (req, res) => {
         console.log(err)
         return res.status(500).json( err );
     }
-};
-/*
+};*/
+
 
 // Create a new order
 const createOrder = async (req, res) => {
@@ -188,7 +188,7 @@ const createOrder = async (req, res) => {
 
         //initate stk push
         const paymentResponse = await initiateStkPush(phone_number, totalAmount);
-        //console.log(paymentResponse?.ResponseCode)        
+        console.log(paymentResponse?.ResponseCode)        
 
         // Wait for payment confirmation via callback (handled by a different endpoint)
         const checkoutRequestID = paymentResponse?.CheckoutRequestID;
@@ -271,7 +271,7 @@ const paymentCallback = async (req, res) => {
         console.error(err);
         return res.status(500).json({ error: "Error creating order after payment confirmation" });
     }
-};*/
+};
 
 
 
