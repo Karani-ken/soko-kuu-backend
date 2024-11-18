@@ -3,7 +3,6 @@ const dbConfig = require('../Config/dbConfig')
 const userQueries = require("../Queries/UserQueries")
 const productQueries = require('../Queries/productQueries')
 const categoriesQueries = require('../Queries/CategoriesQueries')
-const paymentQueries = require('../Queries/PaymentQueries')
 const serviceQueries = require('../Queries/ServiceQueries')
 const customerQuery = require('../Queries/CustomersQueries')
 const orderQueries = require('../Queries/Orders')
@@ -12,7 +11,7 @@ const locations = require('../Queries/LocationQueries')
 const feedback = require('../Queries/Feedback')
 const houseQueries = require('../Queries/House')
 const pool = mysql.createPool(dbConfig); /* connection pool is technique 
-used to efficiently manage and reuse database connections improving performance */
+used to efficiently manage and reuse databaFse connections improving performance */
 
 const executeQuery = (query, values = []) => {
     return new Promise((resolve, reject) => {
@@ -48,8 +47,7 @@ const createTableIfNotExists = async () => {
         { name: 'categories', query: categoriesQueries.showCategoriesTable, createQuery: categoriesQueries.categoryTable },
         { name: 'product_categories', query: categoriesQueries.showProductCategoriesTable, createQuery: categoriesQueries.productCategoryTable },
         { name: 'service_categories', query: categoriesQueries.showServiceCategoriesTable, createQuery: categoriesQueries.serviceCategoryTable },      
-        { name: 'services', query: serviceQueries.showServiceTable, createQuery: serviceQueries.createServiceTable },
-        { name: 'payments', query: paymentQueries.showPaymentsTable, createQuery: paymentQueries.createPaymentsTable },        
+        { name: 'services', query: serviceQueries.showServiceTable, createQuery: serviceQueries.createServiceTable },      
         { name: 'orders', query: orderQueries.showOrdersTable, createQuery: orderQueries.createOrdersTable },
         { name: 'orders_items', query: orderQueries.showOrderItemsTable, createQuery: orderQueries.createOrderItemsTable },
         { name: 'customers', query: customerQuery.showCustomersTable, createQuery: customerQuery.createCustomerTable },
@@ -422,88 +420,6 @@ const deleteServiceCategory = async (category_id) => {
         throw error;
     }
 }
-// Insert payment
-const insertPayment = async (paymentData) => {
-    const { transaction_code, name, email, phone, agent_id } = paymentData;
-    try {
-        await executeQuery(paymentQueries.insertPayment, [transaction_code, name, email, phone, agent_id]);
-        //console.log("Payment was added");
-        return "Payment was added";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get all payments
-const getAllPayments = async () => {
-    try {
-        const payments = await executeQuery(paymentQueries.selectAllPayments);
-        return payments;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get a single payment by payment_id
-const getOnePayment = async (payment_id) => {
-    try {
-        const payment = await executeQuery(paymentQueries.selectPaymentById, [payment_id]);
-        return payment;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get a single payment by transaction_code
-const getPaymentByTransactionCode = async (transaction_code) => {
-    try {
-        const payment = await executeQuery(paymentQueries.selectPaymentByTransactionCode, [transaction_code]);
-        return payment;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-//select agent payment 
-const myPayments = async (agent_id) => {
-    try {
-        const payments = await executeQuery(paymentQueries.selectAgentPayments, [agent_id])
-        return payments;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-
-// Update payment
-const updatePayment = async (updatePaymentData) => {
-    const { name, email, phone, agent_id, payment_id } = updatePaymentData;
-    try {
-        await executeQuery(paymentQueries.updatePayment, [name, email, phone, agent_id, payment_id]);
-       // console.log("Payment was updated");
-        return "Payment was updated";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Delete payment
-const deletePayment = async (payment_id) => {
-    try {
-        await executeQuery(paymentQueries.deletePayment, [payment_id]);
-       // console.log("Payment was deleted");
-        return "Payment was deleted";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
 // Insert service
 const insertService = async (serviceData) => {
     console.log(serviceData)
@@ -920,21 +836,14 @@ module.exports = {
     updateUserPlan,
     addAgent,
     getUsersByAgentId,
-    getAllAgents,
-    insertPayment,
-    getAllPayments,
-    getOnePayment,
-    getPaymentByTransactionCode,
-    updatePayment,
-    deletePayment,
+    getAllAgents,   
     insertService,
     getAllServices,
     getOneService,
     getUserServices,
     updateService,
     updateServiceImages,
-    deleteService,
-    myPayments,
+    deleteService,   
     createServiceCategories,
     getServiceCategories,
     deleteServiceCategory,

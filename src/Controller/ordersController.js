@@ -20,7 +20,7 @@ function getTimestamp() {
 
 function generatePassword() {
 
-    const shortcode = 174379;
+    const shortcode = process.env.SHORTCODE;
     const passkey = process.env.PASSKEY;
     const timestamp = getTimestamp();
     const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
@@ -34,12 +34,12 @@ const generateToken = async () => {
     const auth = Buffer.from(`${consumer}:${secret}`).toString('base64');
 
     try {
-        const response = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
+        const response = await axios.get('https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
             headers: {
                 authorization: `Basic ${auth}`
             }
         });
-       // console.log(response.data.access_token);
+        console.log(response.data.access_token);
         return response.data.access_token; // Return the token directly
     } catch (err) {
         console.log(err);
@@ -59,19 +59,19 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
         await axios.post(
             'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
             {
-                BusinessShortCode: 174379,//STORE NUMBER FOR TILL
+                BusinessShortCode: process.env.SHORTCODE,//STORE NUMBER FOR TILL
                 Password: generatePassword(),
                 Timestamp: getTimestamp(),
                 TransactionType: 'CustomerBuyGoodsOnline',
                 Amount: amount,
                 PartyA: `254${phone}`,
-                PartyB: 174379,
+                PartyB: process.env.SHORTCODE,
                 PhoneNumber: `254${phone}`,
-                CallBackURL: "https://417d-41-209-57-187.ngrok-free.app/orders/payment-callback",
+                CallBackURL: " https://8d82-102-0-4-196.ngrok-free.app/orders/payment-callback",
                 AccountReference: `254${phone}`,
                 TransactionDesc: 'test',
             },
-            {
+            {    
                 headers: {
                     Authorization: `Bearer ${token}`, // Use the token here
                 },
@@ -196,7 +196,7 @@ const createOrder = async (req, res) => {
         temporaryOrders[checkoutRequestID] = { customer_id, items, location, location_pin, totalAmount, phone_number };
         console.log(`Order stored temporarily: ${JSON.stringify(temporaryOrders[checkoutRequestID])}`);
         console.log(orderData)
-        return res.status(200).json({
+        return res.status(200).json({   
             message: "Payment initiated, waiting for confirmation",
             checkoutRequestID, // Track this in the payment callback
         });
@@ -408,6 +408,6 @@ module.exports = {
     getOrderItemsByOrderId,
     updateOrderStatus,
     deleteOrderById,
-    getOrders
-    //paymentCallback
+    getOrders,
+    paymentCallback
 };
