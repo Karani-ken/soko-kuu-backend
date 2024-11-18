@@ -189,7 +189,6 @@ const loginCustomer = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "30d" }
     );
-    console.log(token);
     res.status(200).json(token);
   } catch (err) {
     console.error("Error logging in customer:", err);
@@ -214,14 +213,10 @@ const loginWithSocialAccounts = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "30d" }
       );
-      console.log("logged in user", token);
 
-      res.cookie("access_token", token);
-      res
-        .status(200)
-        .json({ success: true, message: "User logged in", data: customer });
+      // res.cookie("access_token", token);
+      res.status(200).json(token);
     } else {
-      console.log("to registration.");
       // Check if all required details are provided
       if (!email) {
         return res.status(400).json({ error: "Email required." });
@@ -239,8 +234,12 @@ const loginWithSocialAccounts = async (req, res) => {
         customer_name: name,
         email,
         password: hashedPassword,
+        phone: "",
+        googleId: "",
+        town: "",
+        county: "",
       };
-      const result = await dbHandler.insertCustomer(customerData);
+      await dbHandler.insertCustomer(customerData);
       sendWelcomeEmail(email);
       res
         .status(201)
@@ -371,5 +370,5 @@ module.exports = {
   updateCustomer,
   getCustomer,
   deleteCustomer,
- loginWithSocialAccounts,
+  loginWithSocialAccounts,
 };
