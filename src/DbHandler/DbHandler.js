@@ -590,9 +590,10 @@ const deleteCustomer = async (customer_id) => {
 
 //orders
 
-const addOrder = async (customer_id, payment_code,location, location_pin, total_price) => {
+const addOrder = async (orderData) => {
+    const {customer_id, location, location_pin, total_price, checkoutRequestID, phone_number} = orderData
     try {
-        return await executeQuery(orderQueries.addOrder, [customer_id, payment_code,location, location_pin, total_price]);
+        return await executeQuery(orderQueries.addOrder, [customer_id,location, location_pin, total_price, checkoutRequestID, phone_number]);
     } catch (err) {
         console.error('Error deleting customer:', err);
         throw err;
@@ -633,11 +634,27 @@ const updateOrderStatus = async (order_id, order_status) => {
     try {
         return await executeQuery(orderQueries.updateOrderStatus, [order_status, order_id]);
     } catch (err) {
-        console.error('Error deleting customer:', err);
+        console.error('Error updating order:', err);
         throw err;
     }
   
 };
+const getOrderByCheckoutRequestID = async (checkoutRequestID) => {
+    try {
+        return await executeQuery(orderQueries.getOrderByCheckoutID, [checkoutRequestID])
+    } catch (err) {
+        console.error('Error fetch order:', err);
+        throw err;
+    }
+}
+const updatePaymentStatus = async (checkoutRequestID, order_status, payment_code) => {
+    try {
+        return await executeQuery(orderQueries.updateOrderPayment, [ payment_code, order_status, checkoutRequestID,]);
+    } catch (err) {
+        console.error(' error updating order:', err);
+        throw err;
+    }
+}
 
 const deleteOrderById = async (order_id) => {
     try {
@@ -861,6 +878,7 @@ module.exports = {
     addOrder,
     getOrdersByCustomerId,
     getOrdersByOrderId,
+    getOrderByCheckoutRequestID,
     updateOrderStatus,
     deleteOrderById,
     addOrderItems,
@@ -880,5 +898,6 @@ module.exports = {
     createFeedback,
     getFeedbackByProduct,
     updateFeedback,
-    deleteFeedback
+    deleteFeedback,
+    updatePaymentStatus
 }
