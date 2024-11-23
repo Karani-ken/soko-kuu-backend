@@ -196,7 +196,7 @@ const loginWithSocialAccounts = async (req, res) => {
       await dbHandler.insertCustomer(customerData);
       sendWelcomeEmail(email);
       res
-        .status(200)
+        .status(201)
         .json({ success: true, message: "Customer registered successfully" });
     }
   } catch (error) {
