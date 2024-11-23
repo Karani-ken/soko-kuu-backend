@@ -11,56 +11,10 @@ const {
   sendOtpEmail,
   sendPasswordResetMessage,
 } = require("../Middleware/mailMiddelware");
-// const GoogleStratergy = require('passport-google-oauth20').Strategy
-// Add a new customer
 
 const generateOtp = () => {
   return crypto.randomInt(100000, 999999).toString();
 };
-
-// passport.use(new GoogleStratergy({
-//     clientID: process.env.GOOGLE_CLIENT_CLIENT_ID,
-//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     callbackUrl: "/auth/google/callback",
-// }, async (accessToken, refreshToken, profile, done) => {
-//     try {
-//         //chacke in user exists in the database
-//         const existingCustomer = await dbHandler.getCustomerByEmail(profile.emails[0].value);
-//         if (existingCustomer) {
-//             return done(null, existingCustomer) //Existing user not found return user
-//         }
-//         const newCustomer = {
-//             customer_name: profile.displayName,
-//             email: profile.emails[0].value,
-//             googleId: profile.id,
-//             password: '',
-//             town:'',
-//             county: '',
-//             phone:'',
-
-//         }
-//         //insert the new Customer into the database
-//         const result = await dbHandler.insertCustomer(newCustomer);
-//         return done(null, result)
-//     } catch (error) {
-//         return done(err, null);
-//     }
-// }));
-
-// //serialize user into session
-// passport.serializeUser((user, done) => {
-//     done(null, user.customer_id)
-// })
-
-// //deserialize user from session
-// passport.deserializeUser(async (id, done) => {
-//     try {
-//         const user = await dbHandler.getCustomerById(id); //retrieve user from the database
-//         done(null, user);
-//     } catch (error) {
-//         return (err, null);
-//     }
-// })
 
 const registerCustomer = async (req, res) => {
   const { customer_name, phone, email, password } = req.body;
@@ -201,7 +155,7 @@ const loginWithSocialAccounts = async (req, res) => {
     const { email, name } = req.body;
     // Get customer by email
     const customer = await dbHandler.getCustomerByEmail(email);
-
+    console.log(customer)
     if (customer) {
       // Successful login
       const token = jwt.sign(
@@ -210,10 +164,10 @@ const loginWithSocialAccounts = async (req, res) => {
           username: customer.customer_name,
           email: customer.email,
         },
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET,   
         { expiresIn: "30d" }
       );
-
+      console.log(token)
       // res.cookie("access_token", token);
       res.status(200).json(token);
     } else {
@@ -242,7 +196,7 @@ const loginWithSocialAccounts = async (req, res) => {
       await dbHandler.insertCustomer(customerData);
       sendWelcomeEmail(email);
       res
-        .status(201)
+        .status(200)
         .json({ success: true, message: "Customer registered successfully" });
     }
   } catch (error) {

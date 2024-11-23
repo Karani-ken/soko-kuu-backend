@@ -68,7 +68,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
                 PartyA: `254${phone}`,  // Customer phone number (starting with 254)
                 PartyB: process.env.MPESA_TILL,         // Your Paybill/Till Number
                 PhoneNumber: `254${phone}`,  // Phone number of customer (starting with 254)
-                CallBackURL: "https://9ea8-102-0-4-196.ngrok-free.app/orders/payment-callback",  // Your callback URL
+                CallBackURL: "https://d5ab-102-0-4-196.ngrok-free.app/orders/payment-callback",  // Your callback URL
                 AccountReference: `254${phone}`,  // Unique account reference for the transaction
                 TransactionDesc: 'test',  // Description of the transaction
             },
@@ -84,7 +84,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
     } catch (err) {
         // Log and rethrow error with more details
         console.error('STK Push Error:', err.response ? err.response.data : err.message);
-        throw new Error('STK Push request failed');
+        throw new Error('STK Push request failed');      
     }     
 };
 
