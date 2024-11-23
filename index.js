@@ -6,8 +6,6 @@ const authRoutes = require("./src/Routes/auth.Routes");
 const productRoutes = require('./src/Routes/product.Routes');
 const categoryRoutes = require('./src/Routes/category.Routes');
 const serviceRoutes = require('./src/Routes/service.Routes');
-const paymentRoutes = require('./src/Routes/payment.Routes');
-const cartRoutes = require('./src/Routes/cart.Routes');
 const customerRoutes = require('./src/Routes/customer.Routes');
 const orderRoutes = require('./src/Routes/order.Routes');
 const locationRoutes = require('./src/Routes/location.Routes');
@@ -17,6 +15,7 @@ const rateLimit = require('express-rate-limit');  // Import express-rate-limit
 const port = process.env.PORT;
 const app = express();
 
+app.set('trust proxy', 1);
 // Set up rate limiter middleware for API routes
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -50,8 +49,6 @@ app.use('/auth', apiLimiter, authRoutes);
 app.use('/products', apiLimiter, productRoutes);
 app.use('/categories', apiLimiter, categoryRoutes);
 app.use('/services', apiLimiter, serviceRoutes);
-app.use('/payments', paymentRoutes);
-app.use('/cart', cartRoutes);
 app.use('/orders', apiLimiter, orderRoutes);
 app.use('/customer', apiLimiter, customerRoutes);
 app.use('/locations', locationRoutes);

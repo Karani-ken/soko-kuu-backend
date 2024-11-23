@@ -59,7 +59,7 @@ const sendOtpEmail = async (email, otpCode) => {
 
 
         await transporter.sendMail(mailOptions);
-       // console.log({ message: "OTP Email sent successfully" })
+        // console.log({ message: "OTP Email sent successfully" })
     } catch (error) {
         console.log(error)
         // throw error;
@@ -166,37 +166,33 @@ const sendWelcomeEmail = async (email) => {
 
     } catch (error) {
         console.log(error);
-       // throw error;
+        // throw error;
     }
 };
 
 //send orders placed successfuly email
-const sendOrderConfirmationEmail = async (email, name, orderData, total_price, location, location_pin) => {
+const sendOrderConfirmationEmail = async (email, name, order, order_items) => {
     try {
-        const { order, order_items } = orderData; // Extract order and order_items from the data
-
-        // Calculate total amount for the order
-        const totalAmount = order_items.items.reduce((total, item) => {
-            return total + item.quantity * item.product_price;
-        }, 0);
-
+        console.log(order[0].total_price)
+        console.log(order_items)
         // Generate a table of the order items
-        const orderItemsHtml = order_items.items.map(item => `
-            <tr>
-                <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.product_name}</td>
-                <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.quantity}</td>
-                <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.product_price}</td>
-                <td style="padding: 8px; border: 1px solid #e2e8f0;">${(item.quantity * item.product_price).toFixed(2)}</td>
-            </tr>
-        `).join('');
+        const orderItemsHtml = order_items?.map(item => `
+    <tr>
+        <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.product_name}</td>
+        <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.quantity}</td>
+        <td style="padding: 8px; border: 1px solid #e2e8f0;">${item.product_price}</td>
+        <td style="padding: 8px; border: 1px solid #e2e8f0;">${(item.quantity * parseFloat(item.product_price)).toFixed(2)}</td>
+    </tr>
+`).join('');
+
 
         // Create Google Maps link for location_pin
-        const googleMapsLink = `https://www.google.com/maps?q=${location_pin}`;
+        const googleMapsLink = `https://www.google.com/maps?q=${order[0]?.location_pin}`;
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: `Order Confirmation - Order #${order.order_id}`,
+            subject: `Order Confirmation - Order #${order[0]?.order_id}`,
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px;">
                 <div style="background-color: #2b6cb0; padding: 20px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px;">
@@ -212,7 +208,7 @@ const sendOrderConfirmationEmail = async (email, name, orderData, total_price, l
                     </p>
 
                     <h3 style="font-size: 18px; color: #333333;">Order Summary</h3>
-                    <p><strong>Order ID:</strong> ${order.order_id}</p>    
+                    <p><strong>Order ID:</strong> ${order[0]?.order_id}</p>    
                     <p><strong>Date Created:</strong> ${new Date().toLocaleString()}</p>
 
                     <h3 style="font-size: 18px; color: #333333;">Order Items</h3>
@@ -231,12 +227,12 @@ const sendOrderConfirmationEmail = async (email, name, orderData, total_price, l
                     </table>
 
                     <p style="font-size: 16px; color: #333333;">
-                        <strong>Total Amount: </strong> KSH ${total_price.toFixed(2)}
+                        <strong>Total Amount: </strong> KSH ${order[0]?.total_price}
                     </p>
 
                     <h3 style="font-size: 18px; color: #333333;">Delivery Location</h3>
                     <p style="font-size: 16px; color: #555555;">
-                        <strong>Location:</strong> ${location}
+                        <strong>Location:</strong> ${order[0]?.location}
                     </p>
                     <p style="font-size: 16px; color: #555555;">
                         <strong>Location Pin:</strong> <a href="${googleMapsLink}" target="_blank">View on Google Maps</a>

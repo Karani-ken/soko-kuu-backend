@@ -3,10 +3,7 @@ const dbConfig = require('../Config/dbConfig')
 const userQueries = require("../Queries/UserQueries")
 const productQueries = require('../Queries/productQueries')
 const categoriesQueries = require('../Queries/CategoriesQueries')
-const visitortracker = require('../Queries/visitorTracker')
-const paymentQueries = require('../Queries/PaymentQueries')
 const serviceQueries = require('../Queries/ServiceQueries')
-const cartQueries = require('../Queries/CartQueries')
 const customerQuery = require('../Queries/CustomersQueries')
 const orderQueries = require('../Queries/Orders')
 const otpQuery = require('../Queries/OtpQueries')
@@ -14,7 +11,7 @@ const locations = require('../Queries/LocationQueries')
 const feedback = require('../Queries/Feedback')
 const houseQueries = require('../Queries/House')
 const pool = mysql.createPool(dbConfig); /* connection pool is technique 
-used to efficiently manage and reuse database connections improving performance */
+used to efficiently manage and reuse databaFse connections improving performance */
 
 const executeQuery = (query, values = []) => {
     return new Promise((resolve, reject) => {
@@ -50,10 +47,7 @@ const createTableIfNotExists = async () => {
         { name: 'categories', query: categoriesQueries.showCategoriesTable, createQuery: categoriesQueries.categoryTable },
         { name: 'product_categories', query: categoriesQueries.showProductCategoriesTable, createQuery: categoriesQueries.productCategoryTable },
         { name: 'service_categories', query: categoriesQueries.showServiceCategoriesTable, createQuery: categoriesQueries.serviceCategoryTable },      
-        { name: 'services', query: serviceQueries.showServiceTable, createQuery: serviceQueries.createServiceTable },
-        { name: 'payments', query: paymentQueries.showPaymentsTable, createQuery: paymentQueries.createPaymentsTable },
-        { name: 'cart', query: cartQueries.showCartTable, createQuery: cartQueries.createCart },
-        { name: 'cart_items', query: cartQueries.showCartItemsTable, createQuery: cartQueries.createCartItemsTable },
+        { name: 'services', query: serviceQueries.showServiceTable, createQuery: serviceQueries.createServiceTable },      
         { name: 'orders', query: orderQueries.showOrdersTable, createQuery: orderQueries.createOrdersTable },
         { name: 'orders_items', query: orderQueries.showOrderItemsTable, createQuery: orderQueries.createOrderItemsTable },
         { name: 'customers', query: customerQuery.showCustomersTable, createQuery: customerQuery.createCustomerTable },
@@ -285,9 +279,6 @@ const getProductsOnOffer = async () => {
     }
 }
 
-
-
-
 //update products
 const updateProduct = async (updateProductData) => {
     const { product_name, product_price, quantity, product_description, product_id, category, color, size } = updateProductData;
@@ -429,88 +420,6 @@ const deleteServiceCategory = async (category_id) => {
         throw error;
     }
 }
-// Insert payment
-const insertPayment = async (paymentData) => {
-    const { transaction_code, name, email, phone, agent_id } = paymentData;
-    try {
-        await executeQuery(paymentQueries.insertPayment, [transaction_code, name, email, phone, agent_id]);
-        //console.log("Payment was added");
-        return "Payment was added";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get all payments
-const getAllPayments = async () => {
-    try {
-        const payments = await executeQuery(paymentQueries.selectAllPayments);
-        return payments;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get a single payment by payment_id
-const getOnePayment = async (payment_id) => {
-    try {
-        const payment = await executeQuery(paymentQueries.selectPaymentById, [payment_id]);
-        return payment;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Get a single payment by transaction_code
-const getPaymentByTransactionCode = async (transaction_code) => {
-    try {
-        const payment = await executeQuery(paymentQueries.selectPaymentByTransactionCode, [transaction_code]);
-        return payment;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-//select agent payment 
-const myPayments = async (agent_id) => {
-    try {
-        const payments = await executeQuery(paymentQueries.selectAgentPayments, [agent_id])
-        return payments;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-
-// Update payment
-const updatePayment = async (updatePaymentData) => {
-    const { name, email, phone, agent_id, payment_id } = updatePaymentData;
-    try {
-        await executeQuery(paymentQueries.updatePayment, [name, email, phone, agent_id, payment_id]);
-       // console.log("Payment was updated");
-        return "Payment was updated";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
-// Delete payment
-const deletePayment = async (payment_id) => {
-    try {
-        await executeQuery(paymentQueries.deletePayment, [payment_id]);
-       // console.log("Payment was deleted");
-        return "Payment was deleted";
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-};
-
 // Insert service
 const insertService = async (serviceData) => {
     console.log(serviceData)
@@ -617,93 +526,7 @@ const deleteService = async (service_id) => {
     }
 };
 
-//Cart 
 
-// Cart DB handler functions
-const addCart = async (customer_id) => {
-    try {
-        return await executeQuery(cartQueries.insertCart, [customer_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-    
-};
-
-//get cart by id
-const getcartById = async (cart_id) => {
-    try {
-        return executeQuery(cartQueries.getCartById, [cart_id])
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-}
-const getCustomerCart = async (customer_id) => {
-    try {
-        return await executeQuery(cartQueries.getCustomerCart, [customer_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteCart = async (cart_id) => {
-    try {
-        return await executeQuery(cartQueries.deleteCart, [cart_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-// Cart Items DB handler functions
-const addCartItem = async (product_id, cart_id, product_name, product_price, quantity) => {
-    try {
-        return await executeQuery(cartQueries.addCartItems, [product_id, cart_id, product_name, product_price, quantity]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-  
-};
-
-const getCartItems = async (cart_id) => {
-    try {
-        return await executeQuery(cartQueries.getCartItems, [cart_id]); 
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-  
-};
-
-const updateCartItem = async (cart_item_id, quantity) => {
-    try {
-       const result = await executeQuery(cartQueries.updateCartItems, [quantity, cart_item_id]);
-       // console.log(result)
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteCartItemById = async (cart_item_id) => {
-    try {
-        return await executeQuery(cartQueries.deleteCartItemById, [cart_item_id]);
-    } catch (error) {
-        console.log(error)
-        throw error;
-    }
-   
-};
-
-const deleteAllCartItems = async (cart_id) => {
-    return await executeQuery(cartQueries.deleteAllCartItems, [cart_id]);
-};
 //Customers
 const insertCustomer = async (customerData) => {
     const { customer_name, phone, email,password, googleId, town, county,  } = customerData;
@@ -767,9 +590,10 @@ const deleteCustomer = async (customer_id) => {
 
 //orders
 
-const addOrder = async (customer_id, payment_code,location, location_pin, total_price) => {
+const addOrder = async (orderData) => {
+    const {customer_id, location, location_pin, total_price, checkoutRequestID, phone_number} = orderData
     try {
-        return await executeQuery(orderQueries.addOrder, [customer_id, payment_code,location, location_pin, total_price]);
+        return await executeQuery(orderQueries.addOrder, [customer_id,location, location_pin, total_price, checkoutRequestID, phone_number]);
     } catch (err) {
         console.error('Error deleting customer:', err);
         throw err;
@@ -810,11 +634,27 @@ const updateOrderStatus = async (order_id, order_status) => {
     try {
         return await executeQuery(orderQueries.updateOrderStatus, [order_status, order_id]);
     } catch (err) {
-        console.error('Error deleting customer:', err);
+        console.error('Error updating order:', err);
         throw err;
     }
   
 };
+const getOrderByCheckoutRequestID = async (checkoutRequestID) => {
+    try {
+        return await executeQuery(orderQueries.getOrderByCheckoutID, [checkoutRequestID])
+    } catch (err) {
+        console.error('Error fetch order:', err);
+        throw err;
+    }
+}
+const updatePaymentStatus = async (checkoutRequestID, order_status, payment_code) => {
+    try {
+        return await executeQuery(orderQueries.updateOrderPayment, [ payment_code, order_status, checkoutRequestID]);
+    } catch (err) {
+        console.error(' error updating order:', err);
+        throw err;
+    }
+}
 
 const deleteOrderById = async (order_id) => {
     try {
@@ -1013,21 +853,14 @@ module.exports = {
     updateUserPlan,
     addAgent,
     getUsersByAgentId,
-    getAllAgents,
-    insertPayment,
-    getAllPayments,
-    getOnePayment,
-    getPaymentByTransactionCode,
-    updatePayment,
-    deletePayment,
+    getAllAgents,   
     insertService,
     getAllServices,
     getOneService,
     getUserServices,
     updateService,
     updateServiceImages,
-    deleteService,
-    myPayments,
+    deleteService,   
     createServiceCategories,
     getServiceCategories,
     deleteServiceCategory,
@@ -1036,16 +869,7 @@ module.exports = {
     setProductDiscount,
     getServicesByCategories,
     getServicesOnOffer,
-    getGoldUsers,
-    addCart,
-    getCustomerCart,
-    getcartById,
-    deleteCart,
-    addCartItem,
-    getCartItems,
-    updateCartItem,
-    deleteCartItemById,
-    deleteAllCartItems,
+    getGoldUsers,    
     insertCustomer,
     updateCustomer,
     getCustomerById,
@@ -1054,6 +878,7 @@ module.exports = {
     addOrder,
     getOrdersByCustomerId,
     getOrdersByOrderId,
+    getOrderByCheckoutRequestID,
     updateOrderStatus,
     deleteOrderById,
     addOrderItems,
@@ -1073,5 +898,6 @@ module.exports = {
     createFeedback,
     getFeedbackByProduct,
     updateFeedback,
-    deleteFeedback
+    deleteFeedback,
+    updatePaymentStatus
 }

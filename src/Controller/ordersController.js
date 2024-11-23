@@ -6,6 +6,8 @@ let temporaryOrders = {};
 const axios = require('axios')
 require('dotenv').config()
 
+
+
 function getTimestamp() {
     const date = new Date();
     const timestamp = date.getFullYear() +
@@ -20,7 +22,7 @@ function getTimestamp() {
 
 function generatePassword() {
 
-    const shortcode = 174379;
+    const shortcode = process.env.SHORTCODE;
     const passkey = process.env.PASSKEY;
     const timestamp = getTimestamp();
     const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
@@ -34,149 +36,66 @@ const generateToken = async () => {
     const auth = Buffer.from(`${consumer}:${secret}`).toString('base64');
 
     try {
-        const response = await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
+        const response = await axios.get('https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials', {
             headers: {
                 authorization: `Basic ${auth}`
             }
         });
-       // console.log(response.data.access_token);
+        
         return response.data.access_token; // Return the token directly
     } catch (err) {
         console.log(err);
         throw new Error(err.message); // Throw the error for handling upstream
-    }
+    }  
 };
 
 
 const initiateStkPush = async (phoneNumber, totalAmount) => {
-    const phone = phoneNumber.substring(1);
+    const phone = phoneNumber.substring(1);  // Remove leading '0' from phone number
     const amount = totalAmount;
-    const token = await generateToken(); // Await the token generation
-    //console.log("Token:", token);
+    const token = await generateToken();  // Get the authorization token
 
     try {
-
-        await axios.post(
-            'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+        // Send the STK Push request to Safaricom
+        const response = await axios.post(
+            'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
             {
-                BusinessShortCode: 174379,
+                BusinessShortCode: process.env.SHORTCODE, // Store number for till
                 Password: generatePassword(),
                 Timestamp: getTimestamp(),
-                TransactionType: 'CustomerPayBillOnline',
+                TransactionType: 'CustomerBuyGoodsOnline',
                 Amount: amount,
-                PartyA: `254${phone}`,
-                PartyB: 174379,
-                PhoneNumber: `254${phone}`,
-                CallBackURL: "https://417d-41-209-57-187.ngrok-free.app/orders/payment-callback",
-                AccountReference: `254${phone}`,
-                TransactionDesc: 'test',
+                PartyA: `254${phone}`,  // Customer phone number (starting with 254)
+                PartyB: process.env.MPESA_TILL,         // Your Paybill/Till Number
+                PhoneNumber: `254${phone}`,  // Phone number of customer (starting with 254)
+                CallBackURL: "https://9ea8-102-0-4-196.ngrok-free.app/orders/payment-callback",  // Your callback URL
+                AccountReference: `254${phone}`,  // Unique account reference for the transaction
+                TransactionDesc: 'test',  // Description of the transaction
             },
             {
                 headers: {
-                    Authorization: `Bearer ${token}`, // Use the token here
+                    Authorization: `Bearer ${token}`,  // Use the generated token
                 },
             }
-        ).then((response) => {
-           // console.log(response.data);
-            return response.data
-        }).catch((err) => {
-            console.error('STK Push Error:', err.response ? err.response.data : err.message);
-        });
+        );
+
+        // Return the response data to the caller
+        return response.data;
     } catch (err) {
-        console.error("Token generation failed:", err.message);
-    }
+        // Log and rethrow error with more details
+        console.error('STK Push Error:', err.response ? err.response.data : err.message);
+        throw new Error('STK Push request failed');
+    }     
 };
 
-const createOrder = async (req, res) => {
-    const { customer_id, payment_code, items, totalAmount, location, location_pin } = req.body;
-
-    if (!customer_id || !payment_code || !items || !items.length || !location) {
-        return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    //get the customer details 
-    const customer = await orderHandler.getCustomerById(customer_id)
-    if (customer.length === 0) {
-        return res.status(401).json({ error: "Customer Not found" })
-    }
-
-    try {
-        // Step 1: Create the order
-        const total_price = totalAmount;
-        const orderResult = await orderHandler.addOrder(customer_id, payment_code, location, location_pin, total_price);
-       // console.log(orderResult)
-        const order_id = orderResult.insertId; // Get the generated order ID
-
-        // Step 2: Add items to order_items table
-        for (let item of items) {
-            await orderHandler.addOrderItems(
-                order_id,
-                item.product_id,
-                item.product_name,
-                item.product_price,
-                item.quantity,
-            );
-        }
-        const order = {
-            order_id,
-            customer_id,
-            payment_code,
-            totalAmount,
-            location,
-            location_pin
-        }
-        const order_items = {
-            items
-        }
-        const orderData = {
-            order,
-            order_items
-        }
-        
-        await sendOrderConfirmationEmail(customer.email, customer.customer_name, orderData, total_price, location, location_pin)
-        for (let item of items) {
-            const product = await orderHandler.getOneProduct(item.product_id)
-            //console.log(product[0])
-            if (product[0].quantity >= item.quantity && product[0].quantity.length > 0) {
-                product[0].quantity -= item.quantity
-                await orderHandler.updateProductQuantity(product[0].quantity, product[0].product_id)
-            }
-        }
-
-        const customEmail = `sokokuu254@gmail.com`
-        await sendOrderConfirmationEmail(customEmail, customer.customer_name, orderData, total_price, location, location_pin)
-     
-        const message = `New Order Alert Order Id: ${order.order_id}`
-        const recipients = ['0720939444', '0743335552', '0713801284', '0724019618']
-        const formattedRecipients = recipients.map(phone => {
-            return phone.startsWith('0') ? `+254${phone.slice(1)}` : phone;
-        });
-
-        (async () => {
-            try {
-                const response = await sendSms(message, formattedRecipients);
-                //console.log('SMS sent successfully:', response);
-            } catch (err) {
-                console.error('Failed to send SMS:', err.message);
-            }
-        })();
-
-        return res.status(200).json({ message: "Order created successfully" });
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json( err );
-    }
-};
-/*
 
 // Create a new order
 const createOrder = async (req, res) => {
-    const { customer_id, phone_number, items, totalAmount,location, location_pin } = req.body;
+    const { customer_id, phoneNumber, items, totalAmount, location, location_pin } = req.body;
 
-    if (!customer_id || !phone_number || !items || !items.length) {
+    if (!customer_id || !phoneNumber || !items || !items.length) {
         return res.status(400).json({ error: "Missing required fields" });
     }
-
 
     // Get the customer details
     const customer = await orderHandler.getCustomerById(customer_id);
@@ -185,93 +104,119 @@ const createOrder = async (req, res) => {
     }
 
     try {
+        // Initiate the STK push
+        const paymentResponse = await initiateStkPush(phoneNumber, totalAmount);
+     
 
-        //initate stk push
-        const paymentResponse = await initiateStkPush(phone_number, totalAmount);
-        //console.log(paymentResponse?.ResponseCode)        
+        const checkoutRequestID = paymentResponse?.CheckoutRequestID;   
+        
+        if (!checkoutRequestID) {
+            return res.status(400).json({ error: "CheckoutRequestID not returned from STK push" });
+        }
 
-        // Wait for payment confirmation via callback (handled by a different endpoint)
-        const checkoutRequestID = paymentResponse?.CheckoutRequestID;
-       // const orderData = JSON.stringify({ customer_id, items,location,location_pin });
-        temporaryOrders[checkoutRequestID] = { customer_id, items, location, location_pin, totalAmount, phone_number };
-        console.log(`Order stored temporarily: ${JSON.stringify(temporaryOrders[checkoutRequestID])}`);
-        console.log(orderData)
-        return res.status(200).json({
+        // Step 1: Save the order in the database with the CheckoutRequestID
+        const orderData = {
+            customer_id,               
+            total_price: totalAmount,
+            location,
+            location_pin,
+            checkoutRequestID,   
+            phone_number: phoneNumber         
+        };
+
+        const orderResult = await orderHandler.addOrder(orderData);  // Add order to DB
+        const order_id = orderResult.insertId; // Get the generated order ID
+
+        // Step 2: Save the items in the database
+        for (let item of items) {
+            await orderHandler.addOrderItems(order_id, item.product_id, item.product_name, item.product_price, item.quantity);
+        }
+
+        console.log(`Order with CheckoutRequestID ${checkoutRequestID} stored successfully`);
+
+        // Return the checkoutRequestID to the client
+        return res.status(200).json({   
             message: "Payment initiated, waiting for confirmation",
-            checkoutRequestID, // Track this in the payment callback
+            checkoutRequestID, // Track this in the payment callback      
         });
 
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ error: "Error creating order" });
+    } catch (err) {   
+        console.error(err);
+        return res.status(500).json({ error: "Error creating order" });   
     }
 };
 
-const paymentCallback = async (req, res) => {
-    console.log("Callback triggered");
+const paymentCallback = async (req, res) => {    
     const callbackData = req.body;
-    console.log(callbackData);
 
     // Check if the callback contains payment metadata
-    if (!callbackData.Body.stkCallback.CallbackMetadata) {
-        console.log(callbackData.Body);
-        return res.json("ok");       
+    if (!callbackData?.Body?.stkCallback?.CallbackMetadata?.Item) {        
+        let checkoutRequestID = callbackData?.Body?.stkCallback?.CheckoutRequestID
+        let payment_code = "N/A"
+        let order_status = "Cancelled"
+        await orderHandler.updatePaymentStatus(checkoutRequestID, order_status, payment_code); 
+        console.log("Order was cancelled by user")
+        return res.status(400).json("Order was Cancelled!!");
+    }   
+
+    const metadataItems = callbackData?.Body?.stkCallback?.CallbackMetadata?.Item;
+    const checkoutRequestID = callbackData?.Body?.stkCallback?.CheckoutRequestID;
+
+    if (!checkoutRequestID) {
+       
+        return res.status(400).json({ error: 'Missing CheckoutRequestID' });
     }
 
-    // Extract payment details from the callback data
-    const checkoutRequestID = callbackData.Body.stkCallback.CheckoutRequestID; // This will be the key to retrieve the order
-    const amount = callbackData.Body.stkCallback.CallbackMetadata.Item[0].Value;
-    const phone = callbackData.Body.stkCallback.CallbackMetadata.Item[4].Value;
-    const transactionCode = callbackData.Body.stkCallback.CallbackMetadata.Item[1].Value;
+    // Step 1: Retrieve the order from the database using CheckoutRequestID
+    const order = await orderHandler.getOrderByCheckoutRequestID(checkoutRequestID);
 
-    console.log({ phone, amount, transactionCode });
-
-    // Step 1: Retrieve the customer_id and items from the global variable
-    const orderData = temporaryOrders[checkoutRequestID];
-    if (!orderData) {
-        console.error('Order data not found in global variable');
+    if (order.length === 0) {
+      
         return res.status(400).json({ error: "Order data not found" });
     }
 
-    // Parse the retrieved data
-    const { customer_id, items } = orderData;
+    const customer = await orderHandler.getCustomerById(order[0]?.customer_id)
+    if (customer.length === 0) {
+        return res.status(401).json({ error: "Customer Not found" })
+    }
+ 
+    const orderItems = await orderHandler.getOrderItemsByOrderId(order[0]?.order_id)
+   
+    const payment_code = metadataItems.find(item => item.Name === 'MpesaReceiptNumber')?.Value;
+    
 
     try {
-        // Step 2: Create the order
-        const payment_code = transactionCode;
-        const orderResult = await orderHandler.addOrder(customer_id, payment_code);
-        const order_id = orderResult.insertId; // Get the generated order ID
+        // Step 2: Update the order status to "Paid" if the payment was successful
+        const order_status = callbackData?.Body?.stkCallback?.ResultCode === 0 ? 'Confirmed' : 'Cancelled';     
+        
+        await orderHandler.updatePaymentStatus(checkoutRequestID, order_status, payment_code);   
+        
+    
+       
+       await sendOrderConfirmationEmail(customer.email, customer.customer_name, order, orderItems)       
+     
+      const message = `New Order Alert Order Id: ${order[0].order_id}`
+        const recipients = ['0720939444', '0743335552', '0713801284', '0724019618']
+        const formattedRecipients = recipients.map(phone => {
+            return phone.startsWith('0') ? `+254${phone.slice(1)}` : phone;
+        });
 
-        // Step 3: Save the items in the database
-        for (let item of items) {
-            await orderHandler.addOrderItems(
-                order_id,
-                item.product_id,
-                item.product_name,
-                item.product_price,
-                item.quantity
-            );
-
-            // Step 4: Update product stock quantities
-            const product = await orderHandler.getOneProduct(item.product_id);
-            if (product[0].quantity >= item.quantity) {
-                product[0].quantity -= item.quantity;
-                await orderHandler.updateProductQuantity(product[0].quantity, product[0].product_id);
+        (async () => {
+            try {
+                const response = await sendSms(message, formattedRecipients);                
+            } catch (err) {
+                console.error('Failed to send SMS:', err.message);
             }
-        }
-
-        // Step 5: Remove the order from the global variable after successful processing
-        delete temporaryOrders[checkoutRequestID];
-
+        })();
         // Send a success response
         return res.status(200).json({
-            message: "Payment successful, order created",
+            message: "Payment successful, order updated",
         });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: "Error creating order after payment confirmation" });
+        return res.status(500).json({ error: "Error updating order after payment confirmation" });
     }
-};*/
+};
 
 
 
@@ -389,6 +334,17 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+const getOrderCheckoutId = async (req, res) => {
+    const {checkoutRequestID} = req.params
+    try {
+        const order = await orderHandler.getOrderByCheckoutRequestID(checkoutRequestID);  
+       // console.log(order)
+        return res.status(200).json(order[0])
+    } catch (error) {
+        return res.status(500).json("no orders found!!")
+    }
+}
+
 // Delete an order by ID
 const deleteOrderById = async (req, res) => {
     const { order_id } = req.params;
@@ -408,6 +364,7 @@ module.exports = {
     getOrderItemsByOrderId,
     updateOrderStatus,
     deleteOrderById,
-    getOrders
-    //paymentCallback
+    getOrders,
+    paymentCallback,
+    getOrderCheckoutId
 };
