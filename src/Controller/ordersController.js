@@ -54,7 +54,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
     const phone = phoneNumber.substring(1);  // Remove leading '0' from phone number
     const amount = totalAmount;
     const token = await generateToken();  // Get the authorization token
-
+    const callBackUrl = process.env.MPESA_CALL_BACK_URL
     try {
         // Send the STK Push request to Safaricom
         const response = await axios.post(
@@ -68,7 +68,7 @@ const initiateStkPush = async (phoneNumber, totalAmount) => {
                 PartyA: `254${phone}`,  // Customer phone number (starting with 254)
                 PartyB: process.env.MPESA_TILL,         // Your Paybill/Till Number
                 PhoneNumber: `254${phone}`,  // Phone number of customer (starting with 254)
-                CallBackURL: "https://d5ab-102-0-4-196.ngrok-free.app/orders/payment-callback",  // Your callback URL
+                CallBackURL: `${callBackUrl}/orders/payment-callback`,  // Your callback URL
                 AccountReference: `254${phone}`,  // Unique account reference for the transaction
                 TransactionDesc: 'test',  // Description of the transaction
             },
