@@ -12,8 +12,8 @@ const createOrdersTable = `CREATE TABLE orders (
     checkoutRequestID VARCHAR(255),
     phone_number INT(10),
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)  ON DELETE CASCADE;
+    date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)  ON DELETE CASCADE
 )`;
 
 // Order Items Table

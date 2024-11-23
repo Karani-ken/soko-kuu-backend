@@ -28,7 +28,12 @@ const apiLimiter = rateLimit({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", 
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Enable credentials (cookies, HTTP authentication) across domains
+  optionsSuccessStatus: 204,
+}));
 
 // Connect to the database
 dbHandler.pool.getConnection((err, connection) => {
