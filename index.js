@@ -6,8 +6,6 @@ const authRoutes = require("./src/Routes/auth.Routes");
 const productRoutes = require('./src/Routes/product.Routes');
 const categoryRoutes = require('./src/Routes/category.Routes');
 const serviceRoutes = require('./src/Routes/service.Routes');
-const paymentRoutes = require('./src/Routes/payment.Routes');
-const cartRoutes = require('./src/Routes/cart.Routes');
 const customerRoutes = require('./src/Routes/customer.Routes');
 const orderRoutes = require('./src/Routes/order.Routes');
 const locationRoutes = require('./src/Routes/location.Routes');
@@ -30,7 +28,12 @@ const apiLimiter = rateLimit({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", 
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Enable credentials (cookies, HTTP authentication) across domains
+  optionsSuccessStatus: 204,
+}));
 
 // Connect to the database
 dbHandler.pool.getConnection((err, connection) => {
@@ -51,8 +54,6 @@ app.use('/auth', apiLimiter, authRoutes);
 app.use('/products', apiLimiter, productRoutes);
 app.use('/categories', apiLimiter, categoryRoutes);
 app.use('/services', apiLimiter, serviceRoutes);
-app.use('/payments', paymentRoutes);
-app.use('/cart', cartRoutes);
 app.use('/orders', apiLimiter, orderRoutes);
 app.use('/customer', apiLimiter, customerRoutes);
 app.use('/locations', locationRoutes);

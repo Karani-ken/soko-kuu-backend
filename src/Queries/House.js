@@ -14,7 +14,7 @@ const createHouseTable = `CREATE TABLE houses (
     county VARCHAR(100),
     location_pin VARCHAR(100),
     images TEXT,  
-    FOREIGN KEY (user_id) REFERENCES users(id)  ON DELETE CASCADE;
+    FOREIGN KEY (user_id) REFERENCES users(id)  ON DELETE CASCADE
 );
 `
 

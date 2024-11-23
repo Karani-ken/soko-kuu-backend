@@ -12,7 +12,7 @@ const productsTable = `CREATE TABLE products (
     category VARCHAR(100),
     color TEXT,
     size VARCHAR(50),
-    discount INT;  
+    discount INT,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 `

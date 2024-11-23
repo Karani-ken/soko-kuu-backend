@@ -10,6 +10,7 @@ router.post('/send-otp', customerController.requestPasswordReset)
 router.post('/reset-password', customerController.resetPassword)
 // Login a customer
 router.post('/login', customerController.loginCustomer);
+router.post('/login/social-accounts', customerController.loginWithSocialAccounts)
 
 //google login route
 router.get('/auth/google/callback', customerController.googleLoginCustomer);
