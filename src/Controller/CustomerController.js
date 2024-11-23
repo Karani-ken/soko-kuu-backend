@@ -155,7 +155,7 @@ const loginWithSocialAccounts = async (req, res) => {
     const { email, name } = req.body;
     // Get customer by email
     const customer = await dbHandler.getCustomerByEmail(email);
-    console.log(customer)
+    //console.log(customer)
     if (customer) {
       // Successful login
       const token = jwt.sign(
@@ -167,7 +167,7 @@ const loginWithSocialAccounts = async (req, res) => {
         process.env.JWT_SECRET,   
         { expiresIn: "30d" }
       );
-      console.log(token)
+      //console.log(token)
       // res.cookie("access_token", token);
       res.status(200).json(token);
     } else {

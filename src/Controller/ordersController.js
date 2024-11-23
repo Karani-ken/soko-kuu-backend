@@ -132,7 +132,7 @@ const createOrder = async (req, res) => {
             await orderHandler.addOrderItems(order_id, item.product_id, item.product_name, item.product_price, item.quantity);
         }
 
-        console.log(`Order with CheckoutRequestID ${checkoutRequestID} stored successfully`);
+        //console.log(`Order with CheckoutRequestID ${checkoutRequestID} stored successfully`);
 
         // Return the checkoutRequestID to the client
         return res.status(200).json({   
@@ -155,7 +155,7 @@ const paymentCallback = async (req, res) => {
         let payment_code = "N/A"
         let order_status = "Cancelled"
         await orderHandler.updatePaymentStatus(checkoutRequestID, order_status, payment_code); 
-        console.log("Order was cancelled by user")
+       // console.log("Order was cancelled by user")
         return res.status(400).json("Order was Cancelled!!");
     }   
 
