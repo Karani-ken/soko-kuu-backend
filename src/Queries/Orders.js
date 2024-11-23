@@ -5,7 +5,7 @@ const createOrdersTable = `CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id BINARY(16),
     payment_code VARCHAR(255),   
-    order_status ENUM('Pending','Confirmed','Out for Delivery','Delivered', 'Cancelled') DEFAULT 'Pending',
+    order_status ENUM('Pending','Confirmed','Pending Delivery','Delivered', 'Cancelled') DEFAULT 'Pending',
     location VARCHAR(255),
     location_pin VARCHAR(255), 
     total_price DECIMAL(10, 2),
@@ -60,7 +60,7 @@ const deleteOrderById = `DELETE FROM orders WHERE order_id = ?;`;
 // Delete Order Items by Order ID
 const deleteOrderItemsByOrderId = `DELETE FROM order_items WHERE order_id = ?;`
 
-const getOrderByCheckoutID = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders WHERE checkoutRequestID = ? `
+const getOrderByCheckoutID = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, order_status , location, location_pin, total_price, date_created, date_updated FROM orders WHERE checkoutRequestID = ? `
 
 const getAllOrders = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders`;
 

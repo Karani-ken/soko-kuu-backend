@@ -11,6 +11,7 @@ router.put('/update-status/:order_id', orderController.updateOrderStatus); // Up
 router.delete('/order/:order_id', orderController.deleteOrderById); // Delete order by ID
 router.get('/get-order/:order_id', orderController.getOrdersByOrderId);
 router.get('/get-orders', orderController.getOrders);
+router.get('/checkout-id/:checkoutRequestID', orderController.getOrderCheckoutId)
 router.post('/payment-callback',orderController.paymentCallback)
 
 module.exports = router;

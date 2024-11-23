@@ -649,7 +649,7 @@ const getOrderByCheckoutRequestID = async (checkoutRequestID) => {
 }
 const updatePaymentStatus = async (checkoutRequestID, order_status, payment_code) => {
     try {
-        return await executeQuery(orderQueries.updateOrderPayment, [ payment_code, order_status, checkoutRequestID,]);
+        return await executeQuery(orderQueries.updateOrderPayment, [ payment_code, order_status, checkoutRequestID]);
     } catch (err) {
         console.error(' error updating order:', err);
         throw err;
