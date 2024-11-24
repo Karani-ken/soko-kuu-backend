@@ -4,7 +4,7 @@ const router = express.Router();
 const {protect} = require('../Middleware/auth.middleware')
 
 // Order routes
-router.post('/place-order', orderController.createOrder); // remember to protect the route
+router.post('/place-order',protect(), orderController.createOrder); // remember to protect the route
 router.get('/customer-orders/:customer_id', orderController.getOrdersByCustomerId); // Get orders by customer ID
 router.get('/order/items/:order_id', orderController.getOrderItemsByOrderId); // Get order items by order ID
 router.put('/update-status/:order_id', orderController.updateOrderStatus); // Update order status
