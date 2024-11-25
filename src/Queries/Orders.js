@@ -39,11 +39,11 @@ const addOrderItems = `INSERT INTO order_items (order_id, product_id, product_na
 VALUES (?, UNHEX(REPLACE(?, '-', '')), ?, ?, ?);`;
    
 // Get Orders by Customer ID
-const getOrdersByCustomerId = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders WHERE customer_id = UNHEX(?);`
+const getOrdersByCustomerId = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, order_status, location, location_pin, total_price, date_created, date_updated FROM orders WHERE customer_id = UNHEX(?);`
 
 //get order by order id
 
-const getOrdersById = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders WHERE order_id = ?;`;
+const getOrdersById = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, order_status, location, location_pin, total_price, date_created, date_updated FROM orders WHERE order_id = ?;`;
 
 // Get Order Items by Order ID
 const getOrderItemsByOrderId = `SELECT * FROM order_items WHERE order_id = ?;`;
@@ -62,7 +62,7 @@ const deleteOrderItemsByOrderId = `DELETE FROM order_items WHERE order_id = ?;`
 
 const getOrderByCheckoutID = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, order_status , location, location_pin, total_price, date_created, date_updated FROM orders WHERE checkoutRequestID = ? `
 
-const getAllOrders = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, total_price, date_created, date_updated FROM orders`;
+const getAllOrders = `SELECT HEX(customer_id) as customer_id, order_id, payment_code, location, location_pin, order_status, total_price, date_created, date_updated FROM orders`;
 
 
 module.exports = { 
