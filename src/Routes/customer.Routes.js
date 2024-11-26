@@ -21,6 +21,6 @@ router.put('/customers/:customer_id', customerController.updateCustomer);
 router.get('/customers/:customer_id', customerController.getCustomer);
 
 // Delete customer by ID
-router.delete('/customers/:customer_id', protect(true), customerController.deleteCustomer);
+router.delete('/delete', customerController.deleteCustomer);
 
 module.exports = router;     

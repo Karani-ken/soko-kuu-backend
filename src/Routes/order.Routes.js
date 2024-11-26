@@ -13,5 +13,6 @@ router.get('/get-order/:order_id', orderController.getOrdersByOrderId);
 router.get('/get-orders', orderController.getOrders);
 router.get('/checkout-id/:checkoutRequestID', orderController.getOrderCheckoutId)
 router.post('/payment-callback',orderController.paymentCallback)
+router.get('/order-history/download/:customer_id', orderController.downloadOrderHistory)
 
 module.exports = router;

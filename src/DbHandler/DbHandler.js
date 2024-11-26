@@ -578,9 +578,9 @@ const updateCustomerPassword = async (password, email) => {
     }
 }
 
-const deleteCustomer = async (customer_id) => {
+const deleteCustomer = async (email) => {
     try {
-        const [result] = await executeQuery(customerQuery.deleteCustomer, [customer_id]);
+        const result = await executeQuery(customerQuery.deleteCustomer, [email]);
         return result;
     } catch (err) {
         console.error('Error deleting customer:', err);
@@ -589,9 +589,8 @@ const deleteCustomer = async (customer_id) => {
 };
 
 //orders
-
 const addOrder = async (orderData) => {
-    const {customer_id, location, location_pin, total_price, checkoutRequestID, phone_number} = orderData
+    const {customer_id, location, location_pin, total_price, checkoutRequestID, phone_number} = orderData;
     try {
         return await executeQuery(orderQueries.addOrder, [customer_id,location, location_pin, total_price, checkoutRequestID, phone_number]);
     } catch (err) {

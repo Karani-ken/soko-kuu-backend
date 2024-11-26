@@ -1,8 +1,10 @@
 const orderHandler = require('../DbHandler/DbHandler'); // Assuming the DB handler file is in dbHandler folder
 const { sendOrderConfirmationEmail } = require('../Middleware/mailMiddelware')
 const sendSms = require('../Middleware/sendsms.middleware')
-const jwt = require('jsonwebtoken');
-let temporaryOrders = {};
+const fs = require('fs');
+const { createObjectCsvWriter } = require('csv-writer');
+const path = require('path');
+
 const axios = require('axios')
 require('dotenv').config()
 
@@ -357,6 +359,88 @@ const deleteOrderById = async (req, res) => {
     }
 };
 
+const generateOrderHistoryCSV = async (customer_id) => {
+    try {
+        // Fetch orders and items for the customer
+        const orders = await orderHandler.getOrdersByCustomerId(customer_id);
+
+        if (orders.length === 0) {
+            throw new Error("No orders found for this customer");
+        }
+
+        // Column headers
+        const headers = [
+            "Order ID",
+            "Total Price",
+            "Location",
+            "Payment Code",
+            "Phone Number",
+            "Order Status",
+            "Order Date",
+            "Item Name",
+            "Item Quantity",
+            "Item Price"
+        ];
+
+        // Generate CSV data
+        const csvData = [headers.join(",")]; // Add headers as the first row
+
+        for (let order of orders) {
+            const { order_id, total_price, location, payment_code, phone_number, order_status, created_at } = order;
+            
+            // Fetch items for this order
+            const items = await orderHandler.getOrderItemsByOrderId(order_id);
+            
+            for (let item of items) {
+                // Add each item row with relevant fields
+                csvData.push([
+                    order_id,
+                    total_price,
+                    location,
+                    payment_code || "N/A",
+                    phone_number,
+                    order_status,
+                    created_at,
+                    item.product_name,
+                    item.quantity,
+                    item.product_price
+                ].join(","));
+            }
+        }
+
+        // Generate file path and write data to CSV
+        const csvPath = path.join(__dirname, "downloads", `order_history_${customer_id}.csv`);
+        fs.writeFileSync(csvPath, csvData.join("\n"));
+        return csvPath;
+    } catch (error) {
+        console.error("Error generating CSV:", error.message);
+        throw error;
+    }
+};
+
+const downloadOrderHistory = async (req, res) => {
+    const { customer_id } = req.params;
+
+    try {
+        const csvPath = await generateOrderHistoryCSV(customer_id);
+
+        res.download(csvPath, `order_history_${customer_id}.csv`, (err) => {
+            if (err) {
+                console.error("Download error:", err);
+                res.status(500).send("Error downloading file.");
+            } else {
+                // Optionally, delete the file after download
+                fs.unlinkSync(csvPath);
+            }
+        });
+    } catch (error) {
+        console.error("Error:", error.message);
+        res.status(500).json({ error: "Could not download order history." });
+    }
+};
+
+
+
 module.exports = {
     createOrder,
     getOrdersByCustomerId,
@@ -366,5 +450,6 @@ module.exports = {
     deleteOrderById,
     getOrders,
     paymentCallback,
-    getOrderCheckoutId
+    getOrderCheckoutId,
+    downloadOrderHistory
 };
