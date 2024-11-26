@@ -317,9 +317,9 @@ const getCustomer = async (req, res) => {
 
 // Delete a customer by ID
 const deleteCustomer = async (req, res) => {
-  const customer_id = req.params.customer_id;
+  const {email} = req.body;
   try {
-    const result = await dbHandler.deleteCustomer(customer_id);
+    const result = await dbHandler.deleteCustomer(email);
     res
       .status(200)
       .json({ message: "Customer deleted successfully", data: result });

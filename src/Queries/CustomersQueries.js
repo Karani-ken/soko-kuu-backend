@@ -28,7 +28,7 @@ const getCustomerByEmail = `SELECT HEX(customer_id) as customer_id, customer_nam
 const updatePassword = `UPDATE customers SET password = ? WHERE email = ?`
 
 const deleteCustomer = `DELETE FROM customers 
-WHERE customer_id = UNHEX(?);`;
+WHERE email = ?`;
 
 module.exports = {
     showCustomersTable,
