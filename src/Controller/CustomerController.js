@@ -153,9 +153,10 @@ const loginCustomer = async (req, res) => {
 const loginWithSocialAccounts = async (req, res) => {
   try {
     const { email, name } = req.body;
+    
     // Get customer by email
     const customer = await dbHandler.getCustomerByEmail(email);
-    //console.log(customer)
+    
     if (customer) {
       // Successful login
       const token = jwt.sign(
@@ -167,23 +168,23 @@ const loginWithSocialAccounts = async (req, res) => {
         process.env.JWT_SECRET,   
         { expiresIn: "30d" }
       );
-      //console.log(token)
-      // res.cookie("access_token", token);
-      res.status(200).json(token);
+      
+      res.status(200).json({ token });
     } else {
       // Check if all required details are provided
       if (!email) {
         return res.status(400).json({ error: "Email required." });
       }
 
+      // Generate a temporary password
       const generatedPassword =
         Math.random().toString(36).slice("-6") +
         Math.random().toString(36).slice("-6");
-      // hash password.
+      
+      // Hash the password
       const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
 
-      // save users details to database.
-      // Insert the new customer
+      // Define customer data to be saved
       const customerData = {
         customer_name: name,
         email,
@@ -193,11 +194,25 @@ const loginWithSocialAccounts = async (req, res) => {
         town: "",
         county: "",
       };
-      await dbHandler.insertCustomer(customerData);
+
+      // Insert the new customer into the database
+      const newCustomer = await dbHandler.insertCustomer(customerData);
+      
+      // Send a welcome email
       sendWelcomeEmail(email);
-      res
-        .status(201)
-        .json({ success: true, message: "Customer registered successfully" });
+      
+      // Generate a token for the new customer
+      const token = jwt.sign(
+        {
+          id: newCustomer.customer_id,
+          username: newCustomer.customer_name,
+          email: newCustomer.email,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "30d" }
+      );
+
+      res.status(201).json(token);
     }
   } catch (error) {
     res.status(500).json({ error: error.message, success: false });

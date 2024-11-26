@@ -545,7 +545,7 @@ const updateCustomer = async (customer_id, customerData) => {
         const [result] = await executeQuery(customerQuery.updateCustomer, [customer_name, phone, email, town, county, password, customer_id]);
         return result;
     } catch (err) {      
-        console.error('Error updating customer:', err);
+        console.error('Error updating customer:', err);       
         throw err;
     }
 };
