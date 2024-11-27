@@ -280,7 +280,7 @@ const getOrdersByOrderId = async (req, res) => {
 
     try {
         const order = await orderHandler.getOrdersByOrderId(order_id);
-
+        const customer = await orderHandler.getCustomerById(order.customer_id);
         // Check if orders are found
         if (order.length === 0) {
             return res.status(404).json({ error: "No orders found" });
@@ -291,7 +291,8 @@ const getOrdersByOrderId = async (req, res) => {
         const order_items = await orderHandler.getOrderItemsByOrderId(order[0].order_id);
         const newOrder = {
             order,
-            order_items
+            order_items,
+            customer: customer ? customer : {}
         }
 
 
