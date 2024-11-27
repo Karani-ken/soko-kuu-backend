@@ -169,7 +169,7 @@ const loginWithSocialAccounts = async (req, res) => {
         { expiresIn: "30d" }
       );
       
-      res.status(200).json({ token });
+      res.status(200).json( token );
     } else {
       // Check if all required details are provided
       if (!email) {
